@@ -295,10 +295,6 @@ public:
 	}
 };
 
-#include <iostream>
-#include <vector>
-#include <string>
-
 // wrapper for std::vector
 template <typename T>
 class VecWrapper 
@@ -313,21 +309,20 @@ private:
 		const std::string& message
 	) {
 		if (!logBool) return;
-		callNum++;
 		std::string strToPush = 
 			"[call "
 			+ std::to_string(callNum) 
-			+ "] <"
+			+ "] ["
 			+ function
-			+ "> : "
+			+ "] : "
 			+ message;
 		vecLog.push_back(strToPush);
+		callNum++;
 	}
 
 public:
-	std::string printSep = ", ";
 	bool logBool = true;
-	std::vector<std::string>* storedLog = nullptr;
+	std::string printSep = ", ";
 	
 	// empty constructor
 	VecWrapper() {
@@ -343,10 +338,8 @@ public:
 	}
 
 	~VecWrapper() {
+		// ah yes i love useless code
 		log("destructor", "destructed wrapper");
-		if (storedLog != nullptr) {
-			*storedLog = vecLog;
-		}
 	}
 	
 	// return size of vector
@@ -406,25 +399,42 @@ public:
 		return true;
 	}
 
-	// iterator begin
-	typename std::vector<T>::iterator begin() {
-		log("begin", "returned begin iterator");
-		return internalVec.begin();
+	// returns the vector but with removed duplicates
+	std::vector<T> rmDuplicates() {
+		std::vector<T> toReturn {};
+		bool kill;
+		for (auto& i : internalVec) {
+			kill = false;
+			for (auto& x : toReturn) 
+				if (x == i) kill = true;
+			if (!kill) toReturn.push_back(i);
+		}
+		log ("rmDuplicates","returned a duplicate-free vector");
+		return toReturn;
 	}
-	// iterator end
-	typename std::vector<T>::iterator end() {
-		log("end", "returned end iterator");
-		return internalVec.end();
-	}
-	// reverse iterator begin
-	typename std::vector<T>::reverse_iterator r_begin() {
-		log("rbegin", "returned reverse begin iterator");
-		return internalVec.rbegin();
-	}
-	// reverse iterator end
-	typename std::vector<T>::reverse_iterator r_end() {
-		log("rend", "returned reverse end iterator");
-		return internalVec.rend();
+
+	// sorts, if possible
+	bool sort(bool reverse = false) {
+		try {auto test = (short)internalVec[0];}
+		catch (...) {
+			if (!internalVec.size()) 
+				log("sort","!failed to sort vector (size = 0)!");
+			else 
+				log("sort","!failed to sort vector (type cannot cast to int)!");
+			return false;
+		}
+		if (!internalVec.size()) {
+			log("sort","!failed to sort vector (size = 0)!");
+			return false;
+		}
+		if (reverse) 
+			std::sort(internalVec.begin(),internalVec.end(), std::greater<int>());
+		else 
+			std::sort(internalVec.begin(),internalVec.end());
+		// im lazy
+		if (reverse) log("sort","sorted internalVec, reversed");
+		else log("sort","sorted internalVec");
+		return true;
 	}
 
 	// return vector
@@ -451,7 +461,7 @@ public:
 		return vecLog;
 	}
 	// return printable string version of log
-	std::string logToStr(std::string tSep = " ") {
+	std::string logToStr(std::string tSep = "\n") {
 		std::string str {};
 		for (uint64_t i = 0; i < vecLog.size(); i++)
 			str += 
@@ -463,16 +473,42 @@ public:
 		return str;
 	}
 
-	// compare vector
+	// iterator begin
+	typename std::vector<T>::iterator begin() {
+		log("begin", "returned begin iterator");
+		return internalVec.begin();
+	}
+	// iterator end
+	typename std::vector<T>::iterator end() {
+		log("end", "returned end iterator");
+		return internalVec.end();
+	}
+	// reverse iterator begin
+	typename std::vector<T>::reverse_iterator r_begin() {
+		log("r_begin", "returned reverse begin iterator");
+		return internalVec.rbegin();
+	}
+	// reverse iterator end
+	typename std::vector<T>::reverse_iterator r_end() {
+		log("r_end", "returned reverse end iterator");
+		return internalVec.rend();
+	}
+
+	// compare vector to another vector of the same type
 	T operator== (const std::vector<T>& comparison) {
 		log("operator==", "compared vector");
 		return (internalVec == comparison);
+	}
+	// compare vector to another VecWrapper
+	T operator== (const VecWrapper& comparison) {
+		log("operator==", "compared VecWrapper");
+		return (internalVec == comparison.internalVec);
 	}
 
 	// get value
 	T operator[] (const uint64_t& index) {
 		if (index >= internalVec.size()) {
-			log("operator[]", "accessed index " + std::to_string(index) + " (out of bounds");
+			log("operator[]", "!accessed index " + std::to_string(index) + " (out of bounds)!");
 			// fuck, what the hell is the user doing
 			return 1;
 		}
@@ -481,12 +517,12 @@ public:
 	}
 
 	// return indexes where the value is present
-	T operator() (const T& value) {
+	std::vector<uint64_t> operator() (const T& value) {
 		std::vector<uint64_t> indexes {};
 		for (uint64_t i = 0; i < internalVec.size(); i++) 
 			if (internalVec[i] == value) 
 				indexes.push_back(i);
-		log("operator()", "returned indexes of value " + value);
+		log("operator()", "returned indexe(s) of a value");
 		return indexes;
 	}
 
@@ -529,6 +565,11 @@ public:
 	void operator= (VecWrapper newish) {
 		internalVec = newish.internalVec;
 		log("operator=", "assigned new vector from VecWrapper");
+	}
+	// assign internal vector to nothing
+	void operator= (void* _) {
+		internalVec = {};
+		log("operator=", "assigned new vector to {}");
 	}
 
 	// ostream operator: print vector with sep in between
