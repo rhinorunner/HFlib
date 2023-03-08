@@ -1,6 +1,6 @@
 // Helpful Functions library (HFlib)
 // created by Zaine Rehman
-// from 12-7-22 to 2-18-23
+// from 12-7-22 to 3-7-23
 
 #ifndef HFLIB_HPP_CHECK
 #define HFLIB_HPP_CHECK
@@ -191,6 +191,40 @@ uint16_t diffBetweenAngles(
 	return (diffAdd < diffSub) ? diffAdd : diffSub;
 }
 
+// returns the gcd of 2 numbers
+int64_t gcd(
+	const int64_t& a, 
+	const int64_t& b
+) {
+    if (!a)    return b;
+    if (!b)    return a;
+    if (a < b) return gcd(a, b % a);
+               return gcd(b, a % b);
+}
+
+// converts a decimal to a fraction
+std::string decToFrac(const double& dec) {
+	// get the decimal part
+	double decPart = dec - (int64_t)dec;
+	// get the whole part
+	int64_t wholePart = (int64_t)dec;
+	// get the numerator
+	int64_t numerator = decPart * 1000000000;
+	// get the denominator
+	int64_t denominator = 1000000000;
+	// reduce the fraction
+	int64_t gcd1 = gcd(numerator, denominator);
+	numerator /= gcd1;
+	denominator /= gcd1;
+	// return the fraction
+	return 
+		  std::to_string(wholePart) 
+		+ " " 
+		+ std::to_string(numerator) 
+		+ "/" 
+		+ std::to_string(denominator);
+}
+
 
 // returns the index(es) of a value in a vector
 template <typename T>
@@ -261,18 +295,20 @@ public:
 	}
 };
 
-template <typename T>
 // wrapper for std::vector
+template <typename T>
 class VecWrapper 
 {
 private:
 	std::vector<T> internalVec;
 	std::vector<std::string> vecLog {};
+	uint64_t callNum = 0;
 
 	void log (
 		const std::string& function,
 		const std::string& message
 	) {
+		if (!logBool) return;
 		callNum++;
 		std::string strToPush = 
 			"[call "
@@ -281,103 +317,116 @@ private:
 			+ function
 			+ "> : "
 			+ message;
-		if (logBool) vecLog.push_back(strToPush);
-	}
-
-	std::vector<T> resizeVec (
-		std::vector<T> vec,
-		const uint64_t& size
-	) {
-		if (size > vec.size()) {
-			vec.resize(size);
-		}
-		return vec;
+		vecLog.push_back(strToPush);
 	}
 
 public:
-	uint64_t callNum = 0;
-	uint64_t sizeLimit = 0;
 	std::string printSep = ", ";
-	bool logBool;
-
-	// 1 - vector data
-	// 2 - vec size limit, 0 = no limit
-	// 3 - log all interactions?
-	VecWrapper(
-		std::vector<T> vec = {},
-		uint64_t size = 0,
-		bool logG = false
-	) : internalVec(vec), logBool(logG), sizeLimit(size) {
-		if (sizeLimit) internalVec = resizeVec(internalVec, sizeLimit);
-		log("VecWrapper", "constructed wrapper with vec size of " + internalVec.size());
+	bool logBool = true;
+	std::vector<std::string>* storedLog = nullptr;
+	
+	// empty constructor
+	VecWrapper() {
+		log("constructor", "constructed wrapper (no args)");
 	}
+
+	// parameter pack constructor
+	template <typename... Args>
+	explicit VecWrapper(Args... args) {
+		// i hate how this looks
+		(internalVec.push_back(args), ...);
+		log("constructor", "constructed wrapper with packed args");
+	}
+
 	~VecWrapper() {
-		// lol whats the point of logging this, it'll just be deallocated right after
-		log("VecWrapper", "destructed wrapper");
-	}
-
-	// get index
-	VecWrapper operator[] (const uint64_t& index) {
-		if (index >= internalVec.size()) {
-			// fuck
-			return 1;
+		log("destructor", "destructed wrapper");
+		if (storedLog != nullptr) {
+			*storedLog = vecLog;
 		}
-		log("operator[]", "accessed index " + index);
-		return internalVec[index];
+	}
+	
+	// return size of vector
+	uint64_t size() {
+		log("size", "returned size");
+		return internalVec.size();
 	}
 
-	// append value to vector
-	VecWrapper operator+= (const T& value) {
+	// push back
+	bool push_back(const T& value) {
 		internalVec.push_back(value);
-		log("operator+=", "added value");
-		if (internalVec.size() > sizeLimit) {
-			internalVec = resizeVec(internalVec, sizeLimit);
-			log("operator+=", "resized vector to size limit");
-		}
-		return *this;
+		log("push_back", "pushed back value");
+		return true;
 	}
-	// append vector to vector
-	VecWrapper operator+= (const std::vector<T>& vec) {
-		internalVec.insert(internalVec.end(), vec.begin(), vec.end());
-		log("operator+=", "added vector values");
-		if (internalVec.size() > sizeLimit) {
-			internalVec = resizeVec(internalVec, sizeLimit);
-			log("operator+=", "resized vector to size limit");
+	// pop back
+	bool pop_back() {
+		if (internalVec.empty()) {
+			log("pop_back", "!attempted to pop empty vec!");
+			return false;
 		}
-		return *this;
+		internalVec.pop_back();
+		log("pop_back", "popped back value");
+		return true;
 	}
-	// append VecWrapper vector to vector
-	VecWrapper operator+= (const VecWrapper& vec) {
-		internalVec.insert(internalVec.end(), vec.internalVec.begin(), vec.internalVec.end());
-		log("operator+=", "added VecWrapper vector values");
-		if (internalVec.size() > sizeLimit) {
-			internalVec = resizeVec(internalVec, sizeLimit);
-			log("operator+=", "resized vector to size limit");
+	// push front
+	bool push_front(const T& value) {
+		internalVec.insert(internalVec.begin(), value);
+		log("push_front", "pushed front value");
+		return true;
+	}
+	// pop front
+	bool pop_front() {
+		if (internalVec.empty()) {
+			log("pop_front", "!attempted to pop empty vec!");
+			return false;
 		}
-		return *this;
+		internalVec.erase(internalVec.begin());
+		log("pop_front", "popped front value");
+		return true;
 	}
 
-	// assign internal vector to new vector
-	VecWrapper operator= (std::vector<T> newish) {
-		if (sizeLimit) newish = resizeVec(newish, sizeLimit);
-		internalVec = newish;
-		log("operator=", "assigned new vector");
-		return *this;
-	}
-	// assign internal vector to new vector from other VecWrapper
-	VecWrapper operator= (VecWrapper newish) {
-		if (sizeLimit) newish = resizeVec(newish, sizeLimit);
-		internalVec = newish.internalVec;
-		log("operator=", "assigned new vector from VecWrapper");
-		return *this;
+	// delete specific index
+	bool del(const uint64_t& index) {
+		if (index >= internalVec.size()) {
+			log("del", "!attempted to delete value at index " + std::to_string(index) + " (out of bounds)!");
+			return false;
+		}
+		internalVec.erase(internalVec.begin() + index);
+		log("del", "deleted value at index " + std::to_string(index));
+		return true;
 	}
 
-	// ostream operator: print vector with sep in between
-	friend std::ostream& operator<< (
-		std::ostream& os, VecWrapper& VW
-	) {
-		os << VW.vToStr();
-		return os;
+	// resize vector
+	bool resize(const uint64_t& newSize) {
+		internalVec.resize(newSize);
+		log("resize", "resized vector to size " + std::to_string(newSize));
+		return true;
+	}
+
+	// iterator begin
+	typename std::vector<T>::iterator begin() {
+		log("begin", "returned begin iterator");
+		return internalVec.begin();
+	}
+	// iterator end
+	typename std::vector<T>::iterator end() {
+		log("end", "returned end iterator");
+		return internalVec.end();
+	}
+	// reverse iterator begin
+	typename std::vector<T>::reverse_iterator r_begin() {
+		log("rbegin", "returned reverse begin iterator");
+		return internalVec.rbegin();
+	}
+	// reverse iterator end
+	typename std::vector<T>::reverse_iterator r_end() {
+		log("rend", "returned reverse end iterator");
+		return internalVec.rend();
+	}
+
+	// return vector
+	std::vector<T> getVec() {
+		log("getVec", "returned internal vector value");
+		return &internalVec;
 	}
 
 	// return printable string version of vector
@@ -388,20 +437,103 @@ public:
 			str += std::to_string(internalVec[i]) 
 				+ (i == internalVec.size()-1 ? "" : printSep);
 		}
+		log("vToStr", "returned vector as string");
 		return str;
 	}
 
+	// return log
+	std::vector<std::string> getLog() {
+		log("getLog", "returned log");
+		return vecLog;
+	}
 	// return printable string version of log
-	std::string logToStr(std::string tSep = " ") {
+	std::string logToStr(std::string& tSep = " ") {
 		std::string str {};
-		for (uint64_t i = 0; i < vecLog.size(); i++)  {
+		for (uint64_t i = 0; i < vecLog.size(); i++)
 			str += 
 				"{"
 				+ vecLog[i]
 				+ "}"
 				+ tSep;
-		}
+		log("logToStr", "returned log as string");
 		return str;
+	}
+
+	// compare vector
+	T operator== (const std::vector<T>& comparison) {
+		log("operator==", "compared vector");
+		return (internalVec == comparison);
+	}
+
+	// get value
+	T operator[] (const uint64_t& index) {
+		if (index >= internalVec.size()) {
+			log("operator[]", "accessed index " + (std::string)index + " (out of bounds");
+			// fuck, what the hell is the user doing
+			return 1;
+		}
+		log("operator[]", "accessed index " + (std::string)index);
+		return internalVec[index];
+	}
+
+	// return indexes where the value is present
+	T operator() (const T& value) {
+		std::vector<uint64_t> indexes {};
+		for (uint64_t i = 0; i < internalVec.size(); i++) 
+			if (internalVec[i] == value) 
+				indexes.push_back(i);
+		log("operator()", "returned indexes of value " + value);
+		return indexes;
+	}
+
+	// remove the last element
+	void operator-- () {
+		internalVec.pop_back();
+		log("operator--", "popped back");
+	}
+
+	// append value to vector
+	void operator+= (const T& value) {
+		internalVec.push_back(value);
+		log("operator+=", "added value");
+	}
+	// append vector to vector
+	void operator+= (const std::vector<T>& vec) {
+		internalVec.insert(
+			internalVec.end(), 
+			vec.begin(), 
+			vec.end()
+		);
+		log("operator+=", "added vector values");
+	}
+	// append VecWrapper vector to vector
+	void operator+= (const VecWrapper& vec) {
+		internalVec.insert(
+			internalVec.end(), 
+			vec.internalVec.begin(), 
+			vec.internalVec.end()
+		);
+		log("operator+=", "added VecWrapper vector values");
+	}
+
+	// assign internal vector to new vector
+	void operator= (std::vector<T> newish) {
+		internalVec = newish;
+		log("operator=", "assigned new vector");
+	}
+	// assign internal vector to new vector from other VecWrapper
+	void operator= (VecWrapper newish) {
+		internalVec = newish.internalVec;
+		log("operator=", "assigned new vector from VecWrapper");
+	}
+
+	// ostream operator: print vector with sep in between
+	friend std::ostream& operator<< (
+		std::ostream& os, VecWrapper& VW
+	) {
+		os << VW.vToStr();
+		VW.log("std::ostream operator<<", "printed vector");
+		return os;
 	}
 };
 
