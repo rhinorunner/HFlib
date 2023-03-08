@@ -295,6 +295,10 @@ public:
 	}
 };
 
+#include <iostream>
+#include <vector>
+#include <string>
+
 // wrapper for std::vector
 template <typename T>
 class VecWrapper 
@@ -447,7 +451,7 @@ public:
 		return vecLog;
 	}
 	// return printable string version of log
-	std::string logToStr(std::string& tSep = " ") {
+	std::string logToStr(std::string tSep = " ") {
 		std::string str {};
 		for (uint64_t i = 0; i < vecLog.size(); i++)
 			str += 
@@ -468,11 +472,11 @@ public:
 	// get value
 	T operator[] (const uint64_t& index) {
 		if (index >= internalVec.size()) {
-			log("operator[]", "accessed index " + (std::string)index + " (out of bounds");
+			log("operator[]", "accessed index " + std::to_string(index) + " (out of bounds");
 			// fuck, what the hell is the user doing
 			return 1;
 		}
-		log("operator[]", "accessed index " + (std::string)index);
+		log("operator[]", "accessed index " + std::to_string(index));
 		return internalVec[index];
 	}
 
