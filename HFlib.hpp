@@ -12,6 +12,7 @@
 #include <chrono>
 #include <string>
 #include <type_traits>
+#include <algorithm>
 
 // OS-specific includes
 #ifdef _WIN32
@@ -45,7 +46,10 @@ inline void clear(uint8_t type = 3, uint16_t newLineCharNum = 72) {
 			break;
 
 		case 2:
+			#pragma warning(push)
+			#pragma warning(disable:4129)
 			std::cout<<"\e[1;1H\e[2J";
+			#pragma warning(pop)
 			break;
 		
 		#ifdef _WIN32
@@ -185,8 +189,11 @@ uint16_t diffBetweenAngles(
 	uint16_t diffAdd = 0;
 	uint16_t diffSub = 0;
 	
+	#pragma warning(push)
+	#pragma warning(disable:4244)
 	while (normalizeAngle(angle1 + diffAdd) != angle2) diffAdd++;
 	while (normalizeAngle(angle1 - diffSub) != angle2) diffSub++;
+	#pragma warning(pop)
 
 	return (diffAdd < diffSub) ? diffAdd : diffSub;
 }
@@ -209,7 +216,7 @@ std::string decToFrac(const double& dec) {
 	// get the whole part
 	int64_t wholePart = (int64_t)dec;
 	// get the numerator
-	int64_t numerator = decPart * 1000000000;
+	int64_t numerator = (int64_t)(decPart * 1000000000);
 	// get the denominator
 	int64_t denominator = 1000000000;
 	// reduce the fraction
@@ -246,7 +253,7 @@ public:
 	int32_t extraRand;
 	BetterRand(const int32_t& ExtraRand = 0) : extraRand(ExtraRand){};
 	uint32_t genRand(
-		const int32_t &extra = 4, 
+		const uint32_t &extra = 4, 
 		bool resetExtraRand = true, 
 		int32_t resetERextraIt = 2
 	) {
@@ -273,7 +280,7 @@ public:
 		
 		// do stuff for the rest of the time i guess
 		if (extra >= 5) {
-			for (uint32_t i = 0; i < extra-5; i++) {
+			for (uint32_t i = 0; i < (uint32_t)(extra-5); i++) {
 				switch(genRand(2, false) % 4) 
 				{
 					case 0:
@@ -437,6 +444,26 @@ public:
 		return true;
 	}
 
+	// returns the mean of all items
+	double mean() {
+		try {auto test = (short)internalVec[0];}
+		catch (...) {
+			if (!internalVec.size()) 
+				log("mean","!failed to mean vector (size = 0)!");
+			else 
+				log("mean","!failed to mean vector (type cannot cast to int)!");
+			return false;
+		}
+		if (!internalVec.size()) {
+			log("mean","!failed to mean vector (size = 0)!");
+			return false;
+		}
+		double toReturn = 0;
+		for (auto& i : internalVec) toReturn += i;
+		toReturn /= internalVec.size();
+		return toReturn;
+	}
+
 	// return vector
 	std::vector<T> getVec() {
 		log("getVec", "returned internal vector value");
@@ -471,6 +498,16 @@ public:
 				+ tSep;
 		log("logToStr", "returned log as string");
 		return str;
+	}
+
+	// append VecWrapper vector to vector
+	void addVecWrapper(const VecWrapper& vec) {
+		internalVec.insert(
+			internalVec.end(), 
+			vec.internalVec.begin(), 
+			vec.internalVec.end()
+		);
+		log("operator+=", "added VecWrapper vector values");
 	}
 
 	// iterator begin
@@ -538,22 +575,13 @@ public:
 		log("operator+=", "added value");
 	}
 	// append vector to vector
-	void operator+= (const std::vector<T>& vec) {
+	void operator+= (const std::vector<T> vec) {
 		internalVec.insert(
 			internalVec.end(), 
 			vec.begin(), 
 			vec.end()
 		);
 		log("operator+=", "added vector values");
-	}
-	// append VecWrapper vector to vector
-	void operator+= (const VecWrapper& vec) {
-		internalVec.insert(
-			internalVec.end(), 
-			vec.internalVec.begin(), 
-			vec.internalVec.end()
-		);
-		log("operator+=", "added VecWrapper vector values");
 	}
 
 	// assign internal vector to new vector
