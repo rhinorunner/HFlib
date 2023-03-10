@@ -1,6 +1,6 @@
 // Helpful Functions library (HFlib)
 // created by Zaine Rehman
-// from 12-7-22 to 3-7-23
+// from 12-7-22 to 3-10-23
 
 #ifndef HFLIB_HPP_CHECK
 #define HFLIB_HPP_CHECK
@@ -13,6 +13,7 @@
 #include <string>
 #include <type_traits>
 #include <algorithm>
+#include <cmath>
 
 // OS-specific includes
 #ifdef _WIN32
@@ -42,7 +43,12 @@ inline void clear(uint8_t type = 3, uint16_t newLineCharNum = 72) {
 			break;
 
 		case 1:
-			system("cls"); // :(
+			// :(
+			#ifdef _WIN32
+			system("cls");
+			#else
+			system("clear");
+			#endif
 			break;
 
 		case 2:
@@ -85,6 +91,7 @@ inline void utf16Console() {system("chcp 65001");}
 #endif
 
 // returns the name of the operating system
+// stolen from stackoverflow
 inline std::string getOsName() {
 	#ifdef _WIN32
 	return "Windows";
@@ -100,23 +107,18 @@ inline std::string getOsName() {
 	return "Other";
 	#endif
 }
-// taken from https://stackoverflow.com/questions/15580179/how-do-i-find-the-name-of-an-operating-system
 
 // convert string to vector<char>
 std::vector<char> strToCVec(const std::string& str) {
 	std::vector<char> converted;
-	for (char x : str) {
-		converted.push_back(x);
-	}
+	for (char x : str) converted.push_back(x);
 	return converted;
 }
 
 // convert vector<char> to string
 std::string CVecToStr(const std::vector<char>& cvec) {
 	std::string converted;
-	for (char x : cvec) {
-		converted += x;
-	}
+	for (char x : cvec) converted += x;
 	return converted;
 }
 
@@ -210,6 +212,7 @@ int64_t gcd(
 }
 
 // converts a decimal to a fraction
+// also stolen from stackoverflow
 std::string decToFrac(const double& dec) {
 	// get the decimal part
 	double decPart = dec - (int64_t)dec;
@@ -232,7 +235,6 @@ std::string decToFrac(const double& dec) {
 		+ std::to_string(denominator);
 }
 
-
 // returns the index(es) of a value in a vector
 template <typename T>
 std::vector<uint64_t> getIndexes(
@@ -243,6 +245,19 @@ std::vector<uint64_t> getIndexes(
 	for (uint64_t i = 0; i < value.size(); i++) 
 		if (vector[i] == value) indexes.push_back(i);
 	return indexes;
+}
+
+// calculates the pythagorean theorem
+// L1 and L2 are side lengths, USE L2 FOR C IF CALCULATING A OR B
+// side = 'c','a','b'
+double pyth(
+	const double& L1,
+	const double& L2,
+	const char& side = 'c'
+) {
+	if ((side == 'a') || (side == 'b')) 
+		return sqrt(pow(L1,2)-pow(L2,2));
+	return sqrt(pow(L1,2)+pow(L2,2));
 }
 
 
@@ -262,7 +277,7 @@ public:
 		// set random to unix time
 		auto cool = std::chrono::system_clock::now();
 		auto very =
-		    (unsigned int)
+		    (uint32_t)
 			std::chrono::time_point_cast<std::chrono::milliseconds>
 			(cool).time_since_epoch().count();
 		// add random()
@@ -501,13 +516,13 @@ public:
 	}
 
 	// append VecWrapper vector to vector
-	void addVecWrapper(const VecWrapper& vec) {
+	void addVecW(const VecWrapper& vec) {
 		internalVec.insert(
 			internalVec.end(), 
 			vec.internalVec.begin(), 
 			vec.internalVec.end()
 		);
-		log("operator+=", "added VecWrapper vector values");
+		log("addVecW", "added VecWrapper vector values");
 	}
 
 	// iterator begin
@@ -615,9 +630,9 @@ public:
 // mathematical constants
 namespace constants 
 {
-	constexpr long double pi     = 3.1415926535897932;
-	constexpr long double e      = 2.7182818284590451;
-	constexpr long double gRatio = 1.61803398874989  ;
+	constexpr double pi     = 3.1415926535897932;
+	constexpr double e      = 2.7182818284590451;
+	constexpr double gRatio = 1.61803398874989  ;
 }
 
 // terminal ASCII colors
@@ -679,7 +694,7 @@ namespace TermColors
 }
 
 // periodic table
-static const std::vector<std::vector<std::string>> periodicTable 
+const std::vector<std::vector<std::string>> periodicTable 
 {
 	{"1.0079"  , "Hydrogen"      , "H" , "1"  },
 	{"4.00260" , "Helium"        , "He", "2"  },
