@@ -1,6 +1,6 @@
 // Helpful Functions library (HFlib)
 // created by Zaine Rehman
-// from 12-7-22 to 3-10-23
+// from 12-7-22 to 3-12-23
 
 #ifndef HFLIB_HPP_CHECK
 #define HFLIB_HPP_CHECK
@@ -13,7 +13,6 @@
 #include <string>
 #include <type_traits>
 #include <algorithm>
-#include <cmath>
 
 // OS-specific includes
 #ifdef _WIN32
@@ -43,19 +42,11 @@ inline void clear(uint8_t type = 3, uint16_t newLineCharNum = 72) {
 			break;
 
 		case 1:
-			// :(
-			#ifdef _WIN32
-			system("cls");
-			#else
-			system("clear");
-			#endif
+			system("cls"); // :(
 			break;
 
 		case 2:
-			#pragma warning(push)
-			#pragma warning(disable:4129)
 			std::cout<<"\e[1;1H\e[2J";
-			#pragma warning(pop)
 			break;
 		
 		#ifdef _WIN32
@@ -91,7 +82,6 @@ inline void utf16Console() {system("chcp 65001");}
 #endif
 
 // returns the name of the operating system
-// stolen from stackoverflow
 inline std::string getOsName() {
 	#ifdef _WIN32
 	return "Windows";
@@ -107,19 +97,36 @@ inline std::string getOsName() {
 	return "Other";
 	#endif
 }
+// taken from https://stackoverflow.com/questions/15580179/how-do-i-find-the-name-of-an-operating-system
 
 // convert string to vector<char>
 std::vector<char> strToCVec(const std::string& str) {
 	std::vector<char> converted;
-	for (char x : str) converted.push_back(x);
+	for (char x : str) {
+		converted.push_back(x);
+	}
 	return converted;
 }
 
 // convert vector<char> to string
 std::string CVecToStr(const std::vector<char>& cvec) {
 	std::string converted;
-	for (char x : cvec) converted += x;
+	for (char x : cvec) {
+		converted += x;
+	}
 	return converted;
+}
+
+// returns the index(es) of a value in a vector
+template <typename T>
+std::vector<uint64_t> getIndexes(
+	const std::vector<T>& vector,
+	const T& value
+) {
+	std::vector<uint16_t> indexes;
+	for (uint64_t i = 0; i < value.size(); i++) 
+		if (vector[i] == value) indexes.push_back(i);
+	return indexes;
 }
 
 // converts std::type_info to a more readable std::string
@@ -191,11 +198,8 @@ uint16_t diffBetweenAngles(
 	uint16_t diffAdd = 0;
 	uint16_t diffSub = 0;
 	
-	#pragma warning(push)
-	#pragma warning(disable:4244)
 	while (normalizeAngle(angle1 + diffAdd) != angle2) diffAdd++;
 	while (normalizeAngle(angle1 - diffSub) != angle2) diffSub++;
-	#pragma warning(pop)
 
 	return (diffAdd < diffSub) ? diffAdd : diffSub;
 }
@@ -212,14 +216,13 @@ int64_t gcd(
 }
 
 // converts a decimal to a fraction
-// also stolen from stackoverflow
 std::string decToFrac(const double& dec) {
 	// get the decimal part
 	double decPart = dec - (int64_t)dec;
 	// get the whole part
 	int64_t wholePart = (int64_t)dec;
 	// get the numerator
-	int64_t numerator = (int64_t)(decPart * 1000000000);
+	int64_t numerator = decPart * 1000000000;
 	// get the denominator
 	int64_t denominator = 1000000000;
 	// reduce the fraction
@@ -235,49 +238,51 @@ std::string decToFrac(const double& dec) {
 		+ std::to_string(denominator);
 }
 
-// returns the index(es) of a value in a vector
-template <typename T>
-std::vector<uint64_t> getIndexes(
-	const std::vector<T>& vector,
-	const T& value
-) {
-	std::vector<uint16_t> indexes;
-	for (uint64_t i = 0; i < value.size(); i++) 
-		if (vector[i] == value) indexes.push_back(i);
-	return indexes;
-}
-
-// calculates the pythagorean theorem
-// L1 and L2 are side lengths, USE L2 FOR C IF CALCULATING A OR B
-// side = 'c','a','b'
+// solves for thr pythagorean theorem
+// input the side to solve for and 2 side values
+// if solving for A/B use val 1 as C
 double pyth(
-	const double& L1,
-	const double& L2,
-	const char& side = 'c'
+	const char& side, 
+	const double& val1, 
+	const double& val2
 ) {
-	if ((side == 'a') || (side == 'b')) 
-		return sqrt(pow(L1,2)-pow(L2,2));
-	return sqrt(pow(L1,2)+pow(L2,2));
+	if (side == 'c') 
+		return sqrt(pow(val1, 2) + pow(val2, 2));
+	return sqrt(pow(val1, 2) - pow(val2, 2));
 }
 
+// solves for the quadratic formula
+// returns both solutions
+std::pair<double,double> quadratic(
+	const double& a,
+	const double& b,
+	const double& c
+) {
+	double R1, R2;
+	try { R1 = (-b + sqrt(pow(b, 2) - 4 * a * c)) / (2 * a); } 
+	catch (...) {R1 = 0;}
+	try { R2 = (-b - sqrt(pow(b, 2) - 4 * a * c)) / (2 * a); } 
+	catch (...) {R2 = 0;}
+	return {R1,R2};
+}
 
 // better random!
 class BetterRand {
 public:
 	// adds this to random each time, optional
-	int32_t extraRand;
-	BetterRand(const int32_t& ExtraRand = 0) : extraRand(ExtraRand){};
-	uint32_t genRand(
-		const uint32_t &extra = 4, 
+	uint64_t extraRand;
+	BetterRand(const uint64_t& ExtraRand = 0) : extraRand(ExtraRand){};
+	uint64_t genRand(
+		const uint64_t &extra = 4, 
 		bool resetExtraRand = true, 
-		int32_t resetERextraIt = 2
+		uint64_t resetERextraIt = 2
 	) {
 		if (resetExtraRand)
 		  extraRand = genRand(resetERextraIt, false);
 		// set random to unix time
 		auto cool = std::chrono::system_clock::now();
 		auto very =
-		    (uint32_t)
+		    (uint64_t)
 			std::chrono::time_point_cast<std::chrono::milliseconds>
 			(cool).time_since_epoch().count();
 		// add random()
@@ -295,7 +300,7 @@ public:
 		
 		// do stuff for the rest of the time i guess
 		if (extra >= 5) {
-			for (uint32_t i = 0; i < (uint32_t)(extra-5); i++) {
+			for (uint32_t i = 0; i < extra-5; i++) {
 				switch(genRand(2, false) % 4) 
 				{
 					case 0:
@@ -316,6 +321,7 @@ public:
 		return (very + extraRand);
 	}
 };
+
 
 // wrapper for std::vector
 template <typename T>
@@ -459,26 +465,6 @@ public:
 		return true;
 	}
 
-	// returns the mean of all items
-	double mean() {
-		try {auto test = (short)internalVec[0];}
-		catch (...) {
-			if (!internalVec.size()) 
-				log("mean","!failed to mean vector (size = 0)!");
-			else 
-				log("mean","!failed to mean vector (type cannot cast to int)!");
-			return false;
-		}
-		if (!internalVec.size()) {
-			log("mean","!failed to mean vector (size = 0)!");
-			return false;
-		}
-		double toReturn = 0;
-		for (auto& i : internalVec) toReturn += i;
-		toReturn /= internalVec.size();
-		return toReturn;
-	}
-
 	// return vector
 	std::vector<T> getVec() {
 		log("getVec", "returned internal vector value");
@@ -590,7 +576,7 @@ public:
 		log("operator+=", "added value");
 	}
 	// append vector to vector
-	void operator+= (const std::vector<T> vec) {
+	void operator+= (const std::vector<T>& vec) {
 		internalVec.insert(
 			internalVec.end(), 
 			vec.begin(), 
@@ -625,14 +611,23 @@ public:
 	}
 };
 
+
 // VARIABLES GO PAST HERE
 
 // mathematical constants
 namespace constants 
 {
-	constexpr double pi     = 3.1415926535897932;
-	constexpr double e      = 2.7182818284590451;
-	constexpr double gRatio = 1.61803398874989  ;
+	constexpr double pi             = 3.1415926535897932;
+	constexpr double e              = 2.7182818284590451;
+	constexpr double phi            = 1.6180339887498948;
+	constexpr double tau            = 6.2831853071795862;
+	constexpr double sqrt2          = 1.4142135623730950;
+	constexpr double natLog2	    = 0.6931471805599453;
+	constexpr double eulersConst    = 0.5772156649015329;
+	constexpr double plankConst     = 6.62607015e-34    ;
+	constexpr double avogardosConst = 6.02214076e+23    ;
+	constexpr double magicAngle     = 0.9553166181245092;
+	constexpr double primeConst     = 0.4146825098511116;
 }
 
 // terminal ASCII colors
@@ -694,7 +689,7 @@ namespace TermColors
 }
 
 // periodic table
-const std::vector<std::vector<std::string>> periodicTable 
+static const std::vector<std::vector<std::string>> periodicTable 
 {
 	{"1.0079"  , "Hydrogen"      , "H" , "1"  },
 	{"4.00260" , "Helium"        , "He", "2"  },
