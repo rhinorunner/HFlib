@@ -31,7 +31,9 @@ Main file. It includes all of the other files, so if you `include` it there is n
 This file holds basic functions, such as a clear screen function or a function that gets the OS name. 
 
 ## 
-##### `inline void clear(uint8_t type = 3, uint16_t newLineCharNum = 72)`
+##### clear
+`inline void clear(uint8_t type = 3, uint16_t newLineCharNum = 72)`
+
 Clears the terminal screen. 
 `uint8_t type`: changes the method in which the screen is cleared. 
 `uint16_t newLineCharNum`: changes the number of newline characters printed to the terminal when `type == 0`
@@ -62,7 +64,9 @@ You will only see me
 ```
 
 ## 
-##### `inline std::string getOsName()`
+##### getOsName
+`inline std::string getOsName()`
+
 Returns a string that holds the name of the OS being used. 
 
 ###### Example:
@@ -75,7 +79,124 @@ int main() {
     return 0;
 }
 ```
-output (on Windows machine):
+output (on a Windows machine):
 ```
 Windows
+```
+##
+##### WIN_setConsoleCursor
+`void WIN_setConsoleCursor(const bool& showFlag)`
+###### *Windows only*
+###### !!! DOES NOT WORK !!!
+Sets the cursor visibility. 
+
+##
+##### WIN_utf16Console
+`inline void WIN_utf16Console()`
+
+###### *Windows only*
+Sets the console from the default 8-bits to 16-bits. 
+###### Example:
+```cpp
+#include <iostream>
+#include "HFlib/HFlib.hpp"
+
+int main() {
+    std::cout << "∞" << '\n';
+    HFL::WIN_utf16Console();
+    std::cout << "∞" << '\n';
+    return 0;
+}
+```
+output:
+```
+Γê₧
+Active code page: 65001
+∞
+```
+*please note that `Active code page: 65001` will be printed when the function is used, so using `HFL::clear()` afterward is recommended.*
+
+##
+##### strToCVec
+`std::vector<char> strToCVec(const std::string& str)`
+
+Converts `std::string` to `std::vector<char>`
+
+##
+##### cVecToStr
+`std::string CVecToStr(const std::vector<char>& cvec)`
+
+Converts `std::vector<char>` to `std::string`
+
+##
+##### getIndexes
+`template <typename T> std::vector<uint64_t> getIndexes(const std::vector<T>& vector,const T& value)`
+
+Returns the indexes that the vector has the values at. 
+
+###### Example:
+```cpp
+#include <iostream>
+#include "HFlib/HFlib.hpp"
+
+int main() {
+    std::vector<char> vec {'a','b','a','e'};
+    auto indexes = HFL::getIndexes<char>(vec,'a');
+
+    for (auto& i : indexes) {
+        std::cout << (short)i << '\n';
+    }
+
+    return 0;
+}
+```
+output:
+```
+0
+2
+```
+
+#
+### HF_math.hpp
+This file holds functions related to math
+
+##
+##### radToDeg
+`constexpr double radToDeg(const double& rad)`
+
+Converts a radian value to degrees. 
+
+##
+##### degToRad
+`constexpr double degToRad(const double& deg)`
+
+Converts a degree value to radians. 
+
+##
+##### normalizeAngle
+`constexpr float normalizeAngle(float angle)`
+
+Turns any angle (in degrees) into an angle between 0 and 360. 
+
+###### Example:
+```cpp
+#include <iostream>
+#include "HFlib/HFlib.hpp"
+
+int main() {
+    std::cout << HFL::normalizeAngle(400) << '\n';
+	std::cout << HFL::normalizeAngle(0) << '\n';
+	std::cout << HFL::normalizeAngle(-330) << '\n';
+	std::cout << HFL::normalizeAngle(3821) << '\n';
+	std::cout << HFL::normalizeAngle(360) << '\n';
+    return 0;
+}
+```
+output:
+```
+40
+0
+30
+221
+0
 ```
