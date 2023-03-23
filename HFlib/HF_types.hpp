@@ -6,9 +6,93 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <limits>
 
 // Helpful Functions libary
 namespace HFL {
+
+// use 16 bit infinity symbol (∞) by default?
+static bool HFL_TYPES_inft_use16bInf = false;
+
+// infinity class
+class inf_t {
+public:
+    inf_t() {}
+
+    bool operator= (const inf_t&   val) {return true; }
+    bool operator= (const int64_t& val) {return false;}
+    bool operator= (const double&  val) {return false;}
+    
+    void operator+= (const inf_t&   val) {}
+    void operator+= (const int64_t& val) {}
+    void operator+= (const double&  val) {}
+
+    void operator-= (const inf_t&   val) {}
+    void operator-= (const int64_t& val) {}
+    void operator-= (const double&  val) {}
+
+    void operator*= (const inf_t&   val) {}
+    void operator*= (const int64_t& val) {}
+    void operator*= (const double&  val) {}
+
+    void operator/= (const inf_t&   val) {}
+    void operator/= (const int64_t& val) {}
+    void operator/= (const double&  val) {}
+
+    bool operator== (const inf_t&   val) {return true; }
+    bool operator== (const int64_t& val) {return false;}
+    bool operator== (const double&  val) {return false;}
+
+    bool operator!= (const inf_t&   val) {return false;}
+    bool operator!= (const int64_t& val) {return true; }
+    bool operator!= (const double&  val) {return true; }
+
+    bool operator>  (const inf_t&   val) {return false;}
+    bool operator>  (const int64_t& val) {return true; }
+    bool operator>  (const double&  val) {return true; }
+
+    bool operator<  (const inf_t&   val) {return false;}
+    bool operator<  (const int64_t& val) {return false;}
+    bool operator<  (const double&  val) {return false;}
+
+    bool operator>= (const inf_t&   val) {return true;}
+    bool operator>= (const int64_t& val) {return true;}
+    bool operator>= (const double&  val) {return true;}
+
+    bool operator<= (const inf_t&   val) {return true; }
+    bool operator<= (const int64_t& val) {return false;}
+    bool operator<= (const double&  val) {return false;}
+
+    inf_t operator+ (const inf_t&   val) {return inf_t();}
+    inf_t operator+ (const int64_t& val) {return inf_t();}
+    inf_t operator+ (const double&  val) {return inf_t();}
+
+    inf_t operator- (const inf_t&   val) {return inf_t();}
+    inf_t operator- (const int64_t& val) {return inf_t();}
+    inf_t operator- (const double&  val) {return inf_t();}
+
+    inf_t operator* (const inf_t&   val) {return inf_t();}
+    inf_t operator* (const int64_t& val) {return inf_t();}
+    inf_t operator* (const double&  val) {return inf_t();}
+
+    inf_t operator/ (const inf_t&   val) {return inf_t();}
+    inf_t operator/ (const int64_t& val) {return inf_t();}
+    inf_t operator/ (const double&  val) {return inf_t();}
+
+    friend std::ostream& operator<< (
+        std::ostream& os, 
+        const inf_t& val
+    ) {
+        os << (HFL_TYPES_inft_use16bInf ? "∞" : "inf");
+        return os;
+    }
+
+    // casting turns the cast into max value
+    template <typename T>
+    explicit operator T() const {
+        return std::numeric_limits<T>::max();
+    }
+};
 
 // any amount of bits inteter
 // note: stores with size of uint64_t
@@ -31,7 +115,10 @@ public:
 		else if (bits < 1 ) bits = 1;
 		Val = _formatBits(val, bits);
 	}
-
+    
+    void operator= (uintx_t& val) {
+        Val = _formatBits(val.Val, bits);
+    }
 	void operator= (const int64_t& val) {
 		Val = _formatBits(val, bits);
 	}
@@ -41,6 +128,18 @@ public:
 	}
     bool operator!= (const int64_t& val) {
         return (Val != val);
+    }
+    bool operator> (const int64_t& val) {
+        return (Val > val);
+    }
+    bool operator< (const int64_t& val) {
+        return (Val < val);
+    }
+    bool operator>= (const int64_t& val) {
+        return (Val >= val);
+    }
+    bool operator<= (const int64_t& val) {
+        return (Val <= val);
     }
 
 	int64_t operator+ (const int64_t& val) {
@@ -136,6 +235,8 @@ public:
 	}
 };
 
+static bool HFL_TYPES_VecWrapper_logByDefault = true;
+
 // wrapper for std::vector
 template <typename T>
 class VecWrapper 
@@ -162,7 +263,7 @@ private:
 	}
 
 public:
-	bool logBool = true;
+	bool logBool = HFL_TYPES_VecWrapper_logByDefault;
 	std::string printSep = ", ";
 	
 	// empty constructor

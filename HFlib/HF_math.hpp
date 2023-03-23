@@ -78,13 +78,14 @@ double pyth(
 	const double& val1, 
 	const double& val2
 ) {
-	if (side == 'c') 
-		return sqrt(pow(val1, 2) + pow(val2, 2));
-	return sqrt(pow(val1, 2) - pow(val2, 2));
+    return (side == 'c') ? 
+        sqrt(pow(val1, 2) + pow(val2, 2)) : 
+        sqrt(pow(val1, 2) - pow(val2, 2)) ;
 }
 
 // solves for the quadratic formula
 // returns both solutions
+// DOES NOT WORK
 std::pair<double,double> quadratic(
 	const double& a,
 	const double& b,
