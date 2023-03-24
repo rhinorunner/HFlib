@@ -18,6 +18,7 @@ There are currently 5 different files:
 - `HFlib.hpp`
 
 Each file holds different functions according to what they would be used for (for example, `HF_math` has math related things and `HF_types` has variable types.) 
+
 `HFlib.hpp` includes all other HFlib files. 
 
 To use, simply place the `HFlib` folder inside your project directory and include `.hpp` files from it. **Everything will be inside of the `HFL` namespace.**
@@ -35,7 +36,9 @@ This file holds basic functions, such as a clear screen function or a function t
 `inline void clear(uint8_t type = 3, uint16_t newLineCharNum = 72)`
 
 Clears the terminal screen. 
+
 `uint8_t type`: changes the method in which the screen is cleared. 
+
 `uint16_t newLineCharNum`: changes the number of newline characters printed to the terminal when `type == 0`
 
 types (changed with `type`):
@@ -206,6 +209,7 @@ output:
 `uint16_t diffBetweenAngles(const uint16_t& angle1, const uint16_t& angle2)`
 
 Returns the difference between 2 angles in degrees. 
+
 note: angles should be passed in between 0 and 360
 
 ###### Example:
@@ -265,7 +269,9 @@ output:
 `double pyth(const char& side, const double& val1, const double& val2`
 
 Solves for a missing triangle side using the pythagorean theorem. 
+
 Input the side to solve for (`side`) and the 2 side values (`val1`,`val2`). 
+
 If solving for A or B, use `val1` as side C. 
 
 ##
@@ -311,6 +317,7 @@ A class that provides better random numbers than `random()` or `rand()`.
 `uint64_t genRand(const uint64_t &extra = 4, bool resetExtraRand = true, uint64_t resetERextraIt = 2)`
 
 Returns a random number. 
+
 The 3 parameters create more randomness, it's kind of unnecessary to pass values in honestly. 
 
 ###### Example:
@@ -370,9 +377,13 @@ This file holds miscellaneous things that don't really fit elsewhere.
 `std::string readTypeid (const std::type_info& type, const bool& extraInfo = false)`
 
 converts `std::type_info` to a more readable `std::string`
+
 usage: `readTypeid(typeid(...).name())`
+
 `bool extraInfo:` if true, returns extra information about the type when present
+
 *NOTE: ONLY FOR GCC AS OF RIGHT NOW*
+
 *Clang support will come later. As for MSVC, std::type_info already returns relatively readable type information.*
 
 ##
@@ -478,10 +489,15 @@ Reversed text.
 A vector that holds data for every element on the periodic table. 
 
 Data is formatted as such:
+
 `{"1.0079"  , "Hydrogen"      , "H" , "1"  },`
+
 `[0]`: Atomic mass
+
 `[1]`: Element name
+
 `[2]`: Element symbol
+
 `[3]`: Atomic number
 
 #
