@@ -299,13 +299,14 @@ output:
 
 ##
 #### BetterRand
+`class BetterRand`
 
 A class that provides better random numbers than `random()` or `rand()`. 
 
 ##### *constructors:*
 
 ###### `BetterRand(const uint64_t& ExtraRand = 0)`
-`ExtraRand` adds its value to the randomly generated number before it is returned in `genRand()`. 
+`ExtraRand`: adds its value to the randomly generated number before it is returned in `genRand()`. 
 
 ##### *methods:*
 
@@ -502,6 +503,87 @@ This file holds different data types that can be used.
 
 ##
 #### inf_t
+`class inf_t`
 
 A class that acts as infinity when mathematical operations are applied. 
 
+##### *operators:*
+
+Any operator that is useable on an integer type can be used on this class (including std::ostream overload). 
+
+Assignment operators do not work. 
+
+This class can also be casted into any integer type. 
+
+##
+#### HFL_TYPES_inft_use16bInf
+
+`static bool HFL_TYPES_inft_use16bInf = false;`
+
+If true, `inf_t` will print an infinity ascii symbol to the terminal when using the `std::ostream` operator. If false, it outputs `inf` instead. False by default.
+
+##
+#### uintx_t
+
+`template <uint8_t bits_g> class uintx_t`
+
+A class that acts as an unsigned integer with a variable amount of bits. 
+
+`<uint8_t bits_g>`: the amount of bits that the value will change according to. 
+
+All values will be stored with 64 bits. Lowering the bits value will not make it take up less memory. 
+
+Some use cases, such as assigning one `uintx_t` to another, will not work and requires you to cast the `uintx_t` to an integer before using it. 
+
+##### *constructors:*
+
+###### `uintx_t(const int64_t& val)`
+
+`val`: the numerical value that will be stored. 
+
+##### *operators:*
+
+Any operator that is useable on an integer type can be used on this class (including std::ostream overload). 
+
+##### Example:
+```cpp
+#include <iostream>
+#include "HFlib.HFlib.hpp"
+
+int main() {
+	uintx_t<2> val = 3;
+	std::cout << val << '\n';
+	val++;
+	std::cout << val << '\n';
+	return 0;
+}
+```
+output:
+```cpp
+3
+0
+```
+
+##
+##### VecWrapper
+
+`template <typename T> class VecWrapper`
+
+Wrapper class for `std::vector`. Provides all the functionality as a normal vector but with added things. 
+
+##### *constructors:*
+
+###### `VecWrapper`
+
+Creates the object with no values. 
+
+##### `template <typename... Args> explicit VecWrapper(Args... args)`
+
+
+
+##
+##### HFL_TYPES_VecWrapper_logByDefault
+
+`static bool HFL_TYPES_VecWrapper_logByDefault = true;`
+
+If true, `VecWrapper` will log all interactions by default. True by default. 
