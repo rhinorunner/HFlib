@@ -35,7 +35,9 @@ This file holds basic functions, such as a clear screen function or a function t
 `inline void clear(uint8_t type = 3, uint16_t newLineCharNum = 72)`
 
 Clears the terminal screen. 
+
 `uint8_t type`: changes the method in which the screen is cleared. 
+
 `uint16_t newLineCharNum`: changes the number of newline characters printed to the terminal when `type == 0`
 
 types (changed with `type`):
