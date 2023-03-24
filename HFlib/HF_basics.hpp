@@ -72,8 +72,8 @@ inline std::string getOsName() {
 // taken from https://stackoverflow.com/questions/15580179/how-do-i-find-the-name-of-an-operating-system
 
 #ifdef _WIN32
-// show terminal cursor, doesnt seem to wrok
-void WIN_showConsoleCursor(const bool& showFlag) {
+// sets the terminal cursor, doesnt seem to wrok
+void WIN_setConsoleCursor(const bool& showFlag) {
 	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO cursorInfo;
 	GetConsoleCursorInfo(out, &cursorInfo);
@@ -82,7 +82,7 @@ void WIN_showConsoleCursor(const bool& showFlag) {
 }
 
 // sets the console to utf-16
-inline void utf16Console() {system("chcp 65001");}
+inline void WIN_utf16Console() {system("chcp 65001");}
 
 #endif
 

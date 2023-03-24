@@ -39,6 +39,30 @@ public:
     void operator/= (const int64_t& val) {}
     void operator/= (const double&  val) {}
 
+    void operator%= (const inf_t&   val) {}
+    void operator%= (const int64_t& val) {}
+    void operator%= (const double&  val) {}
+
+    void operator^= (const inf_t&   val) {}
+    void operator^= (const int64_t& val) {}
+    void operator^= (const double&  val) {}
+
+    void operator&= (const inf_t&   val) {}
+    void operator&= (const int64_t& val) {}
+    void operator&= (const double&  val) {}
+
+    void operator|= (const inf_t&   val) {}
+    void operator|= (const int64_t& val) {}
+    void operator|= (const double&  val) {}
+
+    void operator<<=(const inf_t&   val) {}
+    void operator<<=(const int64_t& val) {}
+    void operator<<=(const double&  val) {}
+
+    void operator>>=(const inf_t&   val) {}
+    void operator>>=(const int64_t& val) {}
+    void operator>>=(const double&  val) {}
+
     bool operator== (const inf_t&   val) {return true; }
     bool operator== (const int64_t& val) {return false;}
     bool operator== (const double&  val) {return false;}
@@ -47,13 +71,13 @@ public:
     bool operator!= (const int64_t& val) {return true; }
     bool operator!= (const double&  val) {return true; }
 
-    bool operator>  (const inf_t&   val) {return false;}
-    bool operator>  (const int64_t& val) {return true; }
-    bool operator>  (const double&  val) {return true; }
+    bool operator> (const inf_t&   val) {return false;}
+    bool operator> (const int64_t& val) {return true; }
+    bool operator> (const double&  val) {return true; }
 
-    bool operator<  (const inf_t&   val) {return false;}
-    bool operator<  (const int64_t& val) {return false;}
-    bool operator<  (const double&  val) {return false;}
+    bool operator< (const inf_t&   val) {return false;}
+    bool operator< (const int64_t& val) {return false;}
+    bool operator< (const double&  val) {return false;}
 
     bool operator>= (const inf_t&   val) {return true;}
     bool operator>= (const int64_t& val) {return true;}
@@ -78,6 +102,12 @@ public:
     inf_t operator/ (const inf_t&   val) {return inf_t();}
     inf_t operator/ (const int64_t& val) {return inf_t();}
     inf_t operator/ (const double&  val) {return inf_t();}
+
+    void operator++ () {}
+    void operator-- () {}
+    
+    void operator++ (int) {}
+    void operator-- (int) {}
 
     friend std::ostream& operator<< (
         std::ostream& os, 
