@@ -484,10 +484,15 @@ Reversed text.
 A vector that holds data for every element on the periodic table. 
 
 Data is formatted as such:
+
 `{"1.0079"  , "Hydrogen"      , "H" , "1"  },`
+
 `[0]`: Atomic mass
+
 `[1]`: Element name
+
 `[2]`: Element symbol
+
 `[3]`: Atomic number
 
 #
