@@ -670,7 +670,7 @@ Adds the values of another `std::vector` (with the same type) to the back of the
 Can be used with `std::cout` (or any other `std::ostream` `<<` operator use), and returns all the values inside the vector with `printSep` as the separator. 
 
 ##
-##### HFL_TYPES_VecWrapper_logByDefault
+#### HFL_TYPES_VecWrapper_logByDefault
 
 `static bool HFL_TYPES_VecWrapper_logByDefault = true;`
 
