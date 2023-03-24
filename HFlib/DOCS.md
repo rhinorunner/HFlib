@@ -372,9 +372,13 @@ This file holds miscellaneous things that don't really fit elsewhere.
 `std::string readTypeid (const std::type_info& type, const bool& extraInfo = false)`
 
 converts `std::type_info` to a more readable `std::string`
+
 usage: `readTypeid(typeid(...).name())`
+
 `bool extraInfo:` if true, returns extra information about the type when present
+
 *NOTE: ONLY FOR GCC AS OF RIGHT NOW*
+
 *Clang support will come later. As for MSVC, std::type_info already returns relatively readable type information.*
 
 ##
