@@ -566,10 +566,13 @@ output:
 
 ##
 ##### VecWrapper
-
 `template <typename T> class VecWrapper`
 
-Wrapper class for `std::vector`. Provides all the functionality as a normal vector but with added things. 
+Wrapper class for `std::vector`. Provides all the functionality as a normal vector but with added things (this means you can use it exactly as a normal `std::vector`.) 
+
+All interactions with the `VecWrapper` will be stored within a log (can be disabled). To access the log, use the `getLog()` method. 
+
+Note: `rbegin()` and `rend()` from `std::vector` have been converted into `r_begin()` and `r_end()` respectively. 
 
 ##### *constructors:*
 
@@ -579,7 +582,92 @@ Creates the object with no values.
 
 ##### `template <typename... Args> explicit VecWrapper(Args... args)`
 
+`... args`: arguments that are stored inside the vector.
 
+#### *variables:*
+
+#### logBool
+`bool logBool = HFL_TYPES_VecWrapper_logByDefault;`
+
+If true, logs all interactions with the `VecWrapper`. 
+
+Note: `HFL_TYPES_VecWrapper_logByDefault` is true by default. 
+
+#### printSep
+`std::string printSep = ", ";`
+
+When the vector is turned into a string (`std::ostream operator<<`, `vToStr()`), it will use `printSep` as a separator between values. 
+
+##### *methods:*
+
+All (or at least, almost all) `std::vector` methods can be used with `VecWrapper`. 
+
+##### rmDuplicates
+`std::vector<T> rmDuplicates()`
+
+Returns a vector that is similar to the actual stored vector, except all duplicates are removed. 
+
+##### sort
+`bool sort(bool reverse = false)`
+
+Sorts the vector. Returns `false` if the vector failed to sort. 
+
+`bool reverse`: if true, sorts elements in a reversed order. 
+
+##### getVec
+`std::vector<T> getVec()`
+
+Returns the internally stored `std::vector`. Not many use cases due to all of the operator overloads. 
+
+##### getLog
+`std::vector<std::string> getLog()`
+
+Returns the log. 
+
+##### logToStr
+`std::string logToStr(std::string tSep = "\n")`
+
+Returns the log as a string. 
+
+`std::string tSep`: separator between each item in the log. 
+
+##### vToStr
+`std::string vToStr()`
+
+Returns all the values of the vector as a string with `printSep` separating every item. 
+
+##### addVecW
+`void addVecW(const VecWrapper& vec)`
+
+Inserts the values of a passed in `VecWrapper` to the end of the internal vector. 
+
+#### *operators:*
+
+All `std::vector` operator overloads have been passed over and can also be used with other `VecWrapper` objects.
+
+##### operator()
+`std::vector<uint64_t> operator() (const T& value)`
+
+Returns the indexes that a passed in value occurs in. 
+
+##### operator--
+`void operator-- ()`
+
+Removes the last item in the vector. 
+
+##### operator+=
+`void operator+= (const T& value)`
+
+Adds a value to the back of the vector. 
+
+`void operator+= (const std::vector<T>& vec)`
+
+Adds the values of another `std::vector` (with the same type) to the back of the vector. 
+
+##### std::ostream operator<<
+`friend std::ostream& operator<<`
+
+Can be used with `std::cout` (or any other `std::ostream` `<<` operator use), and returns all the values inside the vector with `printSep` as the separator. 
 
 ##
 ##### HFL_TYPES_VecWrapper_logByDefault
