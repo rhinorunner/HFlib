@@ -200,3 +200,97 @@ output:
 221
 0
 ```
+
+##
+##### diffBetweenAngles
+`uint16_t diffBetweenAngles(const uint16_t& angle1, const uint16_t& angle2)`
+
+Returns the difference between 2 angles in degrees. 
+note: angles should be passed in between 0 and 360
+
+###### Example:
+```cpp
+#include <iostream>
+#include "HFlib/HFlib.hpp"
+
+int main() {
+    std::cout << HFL::diffBetweenAngles(0,90) << '\n';
+	std::cout << HFL::diffBetweenAngles(-39,339) << '\n';
+	std::cout << HFL::diffBetweenAngles(67,55) << '\n';
+    return 0;
+}
+```
+output:
+```
+90
+2
+12
+```
+
+##
+##### gcd
+`int64_t gcd(const int64_t& a, const int64_t& b)`
+
+Returns the greatest common denominator of 2 numbers. 
+
+##
+##### decToFrac
+`std::string decToFrac(const double& dec)`
+
+Turns a decimal into a fraction. 
+
+###### Example:
+```cpp
+#include <iostream>
+#include "HFlib/HFlib.hpp"
+
+int main() {
+    std::cout << HFL::decToFrac(.002) << '\n';
+	std::cout << HFL::decToFrac(355.2323) << '\n';
+	std::cout << HFL::decToFrac(HFL::constants::pi) << '\n';
+	std::cout << HFL::decToFrac(.19038492835) << '\n';
+    return 0;
+}
+```
+output:
+```
+0 1/500
+355 2323/10000
+3 141592653/1000000000
+0 5949529/31250000
+```
+
+##
+##### pyth
+`double pyth(const char& side, const double& val1, const double& val2`
+
+Solves for a missing triangle side using the pythagorean theorem. 
+Input the side to solve for (`side`) and the 2 side values (`val1`,`val2`). 
+If solving for A or B, use `val1` as side C. 
+
+##
+##### quadratic
+`std::pair<double,double> quadratic(const double& a,const double& b,const double& c)`
+###### !!! DOES NOT WORK !!!
+
+Solves the quadratic formula and returns both the + and - answers (if an answer is impossible then 0 will be returned)
+
+##
+##### formatBits
+`constexpr inline uint64_t formatBits(const uint64_t& val,const uint16_t& bits)`
+
+Converts an unsigned int into a number with a variable amount of bits. 
+
+###### Example:
+```cpp
+int main() {
+	uint8_t val = 200;
+	// turn 200 into the value it would be stores as in a 4 bit integer
+	std::cout << HFL::formatBits(val,4) << '\n';
+    return 0;
+}
+```
+output:
+```
+8
+```
