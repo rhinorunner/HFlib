@@ -337,16 +337,27 @@ output:
 
 A namespace full of mathematical constants.
 
+
 `constexpr double pi = 3.1415926535897932;`
+
 `constexpr double e = 2.7182818284590451;`
+
 `constexpr double phi = 1.6180339887498948;`
+
 `constexpr double tau = 6.2831853071795862;`
+
 `constexpr double sqrt2 = 1.4142135623730950;`
+
 `constexpr double natLog2 = 0.6931471805599453;`
+
 `constexpr double eulersConst = 0.5772156649015329;`
+
 `constexpr double plankConst = 6.62607015e-34;`
+
 `constexpr double avogardosConst = 6.02214076e+23;`
+
 `constexpr double magicAngle = 0.9553166181245092;`
+
 `constexpr double primeConst = 0.4146825098511116;`
 
 #
@@ -369,49 +380,95 @@ usage: `readTypeid(typeid(...).name())`
 
 A namespace that holds ANSI values for different terminal colors. 
 
+
 Resets the color to the default terminal color. 
+
 `std::string reset   = "\u001b[0m";`
+
 Classic colors. 
+
 `std::string black   = "\u001b[30m";`
+
 `std::string red     = "\u001b[31m";`
+
 `std::string green   = "\u001b[32m";`
+
 `std::string yellow  = "\u001b[33m";`
+
 `std::string blue    = "\u001b[34m";`
+
 `std::string magenta = "\u001b[35m";`
+
 `std::string cyan    = "\u001b[36m";`
+
 `std::string white   = "\u001b[37m";`
-Brighter versions of the normal colors, doesn't work in some terminals. 
+
+Brighter versions of the normal colors, doesn't work in some 
+terminals. 
+
 `std::string BRI_black   = "\u001b[30m;1m";`
+
 `std::string BRI_red     = "\u001b[31m;1m";`
+
 `std::string BRI_green   = "\u001b[32m;1m";`
+
 `std::string BRI_yellow  = "\u001b[33m;1m";`
+
 `std::string BRI_blue    = "\u001b[34m;1m";`
+
 `std::string BRI_magenta = "\u001b[35m;1m";`
+
 `std::string BRI_cyan    = "\u001b[36m;1m";`
+
 `std::string BRI_white   = "\u001b[37m;1m";`
+
 Background color for text. 
+
 `std::string BACK_black   = "\u001b[40m";`
+
 `std::string BACK_red     = "\u001b[41m";`
+
 `std::string BACK_green   = "\u001b[42m";`
+
 `std::string BACK_yellow  = "\u001b[43m";`
+
 `std::string BACK_blue    = "\u001b[44m";`
+
 `std::string BACK_magenta = "\u001b[45m";`
+
 `std::string BACK_cyan    = "\u001b[46m";`
+
 `std::string BACK_white   = "\u001b[47m";`
-Brighter versions of the background colors, doesn't work in some terminals. 
+
+Brighter versions of the background colors, doesn't work in some 
+terminals. 
+
 `std::string BRI_BACK_black   = "\u001b[40m;1m";`
+
 `std::string BRI_BACK_red     = "\u001b[41m;1m";`
+
 `std::string BRI_BACK_green   = "\u001b[42m;1m";`
+
 `std::string BRI_BACK_yellow  = "\u001b[43m;1m";`
+
 `std::string BRI_BACK_blue    = "\u001b[44m;1m";`
+
 `std::string BRI_BACK_magenta = "\u001b[45m;1m";`
+
 `std::string BRI_BACK_cyan    = "\u001b[46m;1m";`
+
 `std::string BRI_BACK_white   = "\u001b[47m;1m";`
+
 Bold text. 
+
 `std::string BOLD   = "\u001b[1m";`
+
 Underlined text. 
+
 `std::string UNDERL = "\u001b[4m";`
+
 Reversed text. 
+
 `std::string REVRSD = "\u001b[7m";`
 
 ##
@@ -437,5 +494,3 @@ This file holds different data types that can be used.
 
 A class that acts as infinity when mathematical operations are applied. 
 
-##### *operator overloads:*
-###### The following operators are all overloaded for `int64_t`, `inf_t`, and `double`
