@@ -26,6 +26,12 @@ To use, simply place the `HFlib` folder inside your project directory and includ
 ### HFlib.hpp
 The main file. It includes all of the other files, so if you `include` it there is no reason to include any of the other files. 
 
+##
+#### HFL_version
+`static constexpr char* HFL_version`
+
+Holds the current version of HFL that is being used. 
+
 # 
 ### HF_basics.hpp
 This file holds basic functions, such as a clear screen function or a function that gets the OS name. 
