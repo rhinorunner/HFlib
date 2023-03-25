@@ -22,6 +22,12 @@ Each file holds different functions according to what they would be used for (fo
 
 To use, simply place the `HFlib` folder inside your project directory and include `.hpp` files from it. **Everything will be inside of the `HFL` namespace.**
 
+#### Top features
+- [`VecWrapper`](#VecWrapper)
+- `uintx_t`
+- `decToFrac`
+- `BetterRand`
+
 # 
 ### HFlib.hpp
 The main file. It includes all of the other files, so if you `include` it there is no reason to include any of the other files. 
@@ -513,7 +519,7 @@ This file holds different data types that can be used.
 
 A class that acts as infinity when mathematical operations are applied. 
 
-##### *operators:*
+#### *operators:*
 
 Any operator that is useable on an integer type can be used on this class (including std::ostream overload). 
 
@@ -541,13 +547,13 @@ All values will be stored with 64 bits. Lowering the bits value will not make it
 
 Some use cases, such as assigning one `uintx_t` to another, will not work and requires you to cast the `uintx_t` to an integer before using it. 
 
-##### *constructors:*
+#### *constructors:*
 
 ###### `uintx_t(const int64_t& val)`
 
 `val`: the numerical value that will be stored. 
 
-##### *operators:*
+#### *operators:*
 
 Any operator that is useable on an integer type can be used on this class (including std::ostream overload). 
 
@@ -571,7 +577,7 @@ output:
 ```
 
 ##
-##### VecWrapper
+#### VecWrapper
 `template <typename T> class VecWrapper`
 
 Wrapper class for `std::vector`. Provides all the functionality as a normal vector but with added things (this means you can use it exactly as a normal `std::vector`.) 
@@ -580,7 +586,7 @@ All interactions with the `VecWrapper` will be stored within a log (can be disab
 
 Note: `rbegin()` and `rend()` from `std::vector` have been converted into `r_begin()` and `r_end()` respectively. 
 
-##### *constructors:*
+#### *constructors:*
 
 ###### `VecWrapper`
 
@@ -604,7 +610,7 @@ Note: `HFL_TYPES_VecWrapper_logByDefault` is true by default.
 
 When the vector is turned into a string (`std::ostream operator<<`, `vToStr()`), it will use `printSep` as a separator between values. 
 
-##### *methods:*
+#### *methods:*
 
 All (or at least, almost all) `std::vector` methods can be used with `VecWrapper`. 
 
@@ -661,6 +667,10 @@ Returns the indexes that a passed in value occurs in.
 
 Removes the last item in the vector. 
 
+`void operator-- (int)`
+
+Removes the last item in the vector. 
+
 ##### operator+=
 `void operator+= (const T& value)`
 
@@ -674,6 +684,51 @@ Adds the values of another `std::vector` (with the same type) to the back of the
 `friend std::ostream& operator<<`
 
 Can be used with `std::cout` (or any other `std::ostream` `<<` operator use), and returns all the values inside the vector with `printSep` as the separator. 
+
+###### Example:
+```cpp
+#include <iostream>
+#include "HFlib/HFlib.hpp"
+
+int main() {
+	HFL::VecWrapper<int> vec {4,-234,0,0,3,4,5,6};
+
+	std::cout << vec << '\n';
+
+	for (int& i : vec.rmDuplicates()) {
+		std::cout << i << ' ';
+	}
+	std::cout << '\n';
+
+	std::cout << vec.logToStr() <<'\n';
+
+	vec--;
+	vec += 40;
+	vec.sort();
+
+	std::cout << vec.logToStr();
+
+    return 0;
+}
+```
+output:
+```
+4, -234, 0, 0, 3, 4, 5, 6
+4 -234 0 3 5 6
+{[call 0] [constructor] : constructed wrapper with packed args}
+{[call 1] [vToStr] : returned vector as string}
+{[call 2] [std::ostream operator<<] : printed vector}
+{[call 3] [rmDuplicates] : returned a duplicate-free vector}
+
+{[call 0] [constructor] : constructed wrapper with packed args}
+{[call 1] [vToStr] : returned vector as string}
+{[call 2] [std::ostream operator<<] : printed vector}
+{[call 3] [rmDuplicates] : returned a duplicate-free vector}
+{[call 4] [logToStr] : returned log as string}
+{[call 5] [operator--] : popped back}
+{[call 6] [operator+=] : added value}
+{[call 7] [sort] : sorted internalVec}
+```
 
 ##
 #### HFL_TYPES_VecWrapper_logByDefault
