@@ -11,11 +11,11 @@ Helpful Functions Library (HFlib) is a collection of C++ implementation files th
 # 
 ### Usage
 There are currently 5 different files:
-- `HF_basics.hpp`
-- `HF_math.hpp`
-- `HF_misc.hpp`
-- `HF_types.hpp`
-- `HFlib.hpp`
+- [`HF_basics.hpp`](#hf_basicshpp)
+- [`HF_math.hpp`](#hf_mathhpp)
+- [`HF_misc.hpp`](#hf_mischpp)
+- [`HF_types.hpp`](#hf_typeshpp)
+- [`HFlib.hpp`](#hflibhpp)
 
 Each file holds different functions according to what they would be used for (for example, `HF_math` has math related things and `HF_types` has variable types.) 
 `HFlib.hpp` includes all other HFlib files. 
@@ -24,9 +24,9 @@ To use, simply place the `HFlib` folder inside your project directory and includ
 
 #### Top features
 - [`VecWrapper`](#VecWrapper)
-- `uintx_t`
-- `decToFrac`
-- `BetterRand`
+- [`uintx_t`](#uintx_t)
+- [`decToFrac`](#dectofrac)
+- [`BetterRand`](#betterrand)
 
 # 
 ### HFlib.hpp
@@ -128,7 +128,7 @@ output:
 Active code page: 65001
 ∞
 ```
-*please note that `Active code page: 65001` will be printed when the function is used, so using `HFL::clear()` afterward is recommended.*
+*please note that `Active code page: 65001` will be printed when the function is used, so using [`HFL::clear()`](#clear) afterward is recommended.*
 
 ##
 #### strToCVec
