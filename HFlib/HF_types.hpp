@@ -19,95 +19,38 @@ class inf_t {
 public:
     inf_t() {}
 
-    bool operator= (const inf_t&   val) {return true; }
-    bool operator= (const int64_t& val) {return false;}
-    bool operator= (const double&  val) {return false;}
-    
-    void operator+= (const inf_t&   val) {}
-    void operator+= (const int64_t& val) {}
-    void operator+= (const double&  val) {}
+    bool operator= (const inf_t& val) {return true;}
+    bool operator= (double val) {return false;}
 
-    void operator-= (const inf_t&   val) {}
-    void operator-= (const int64_t& val) {}
-    void operator-= (const double&  val) {}
+    bool operator== (const inf_t& val) {return true;}
+    bool operator== (double val) {return false;}
 
-    void operator*= (const inf_t&   val) {}
-    void operator*= (const int64_t& val) {}
-    void operator*= (const double&  val) {}
+    bool operator!= (const inf_t& val) {return false;}
+    bool operator!= (double val) {return true;}
 
-    void operator/= (const inf_t&   val) {}
-    void operator/= (const int64_t& val) {}
-    void operator/= (const double&  val) {}
+    bool operator> (const inf_t& val) {return false;}
+    bool operator> (double val) {return true;}
 
-    void operator%= (const inf_t&   val) {}
-    void operator%= (const int64_t& val) {}
-    void operator%= (const double&  val) {}
+    bool operator< (const inf_t& val) {return false;}
+    bool operator< (double val) {return false;}
 
-    void operator^= (const inf_t&   val) {}
-    void operator^= (const int64_t& val) {}
-    void operator^= (const double&  val) {}
+    bool operator>= (const inf_t& val) {return true;}
+    bool operator>= (double val) {return true;}
 
-    void operator&= (const inf_t&   val) {}
-    void operator&= (const int64_t& val) {}
-    void operator&= (const double&  val) {}
+    bool operator<= (const inf_t& val) {return true;}
+    bool operator<= (double val) {return false;}
 
-    void operator|= (const inf_t&   val) {}
-    void operator|= (const int64_t& val) {}
-    void operator|= (const double&  val) {}
+    inf_t operator+ (const inf_t& val) {return inf_t();}
+    inf_t operator+ (double val) {return inf_t();}
 
-    void operator<<=(const inf_t&   val) {}
-    void operator<<=(const int64_t& val) {}
-    void operator<<=(const double&  val) {}
-
-    void operator>>=(const inf_t&   val) {}
-    void operator>>=(const int64_t& val) {}
-    void operator>>=(const double&  val) {}
-
-    bool operator== (const inf_t&   val) {return true; }
-    bool operator== (const int64_t& val) {return false;}
-    bool operator== (const double&  val) {return false;}
-
-    bool operator!= (const inf_t&   val) {return false;}
-    bool operator!= (const int64_t& val) {return true; }
-    bool operator!= (const double&  val) {return true; }
-
-    bool operator> (const inf_t&   val) {return false;}
-    bool operator> (const int64_t& val) {return true; }
-    bool operator> (const double&  val) {return true; }
-
-    bool operator< (const inf_t&   val) {return false;}
-    bool operator< (const int64_t& val) {return false;}
-    bool operator< (const double&  val) {return false;}
-
-    bool operator>= (const inf_t&   val) {return true;}
-    bool operator>= (const int64_t& val) {return true;}
-    bool operator>= (const double&  val) {return true;}
-
-    bool operator<= (const inf_t&   val) {return true; }
-    bool operator<= (const int64_t& val) {return false;}
-    bool operator<= (const double&  val) {return false;}
-
-    inf_t operator+ (const inf_t&   val) {return inf_t();}
-    inf_t operator+ (const int64_t& val) {return inf_t();}
-    inf_t operator+ (const double&  val) {return inf_t();}
-
-    inf_t operator- (const inf_t&   val) {return inf_t();}
-    inf_t operator- (const int64_t& val) {return inf_t();}
-    inf_t operator- (const double&  val) {return inf_t();}
+    inf_t operator- (const inf_t& val) {return inf_t();}
+    inf_t operator- (double val) {return inf_t();}
 
     inf_t operator* (const inf_t&   val) {return inf_t();}
-    inf_t operator* (const int64_t& val) {return inf_t();}
-    inf_t operator* (const double&  val) {return inf_t();}
+    inf_t operator* (double val) {return inf_t();}
 
-    inf_t operator/ (const inf_t&   val) {return inf_t();}
-    inf_t operator/ (const int64_t& val) {return inf_t();}
-    inf_t operator/ (const double&  val) {return inf_t();}
-
-    void operator++ () {}
-    void operator-- () {}
-    
-    void operator++ (int) {}
-    void operator-- (int) {}
+    inf_t operator/ (const inf_t& val) {return inf_t();}
+    inf_t operator/ (double  val) {return inf_t();}
 
     friend std::ostream& operator<< (
         std::ostream& os, 
@@ -126,129 +69,132 @@ public:
 
 // any amount of bits inteter
 // note: stores with size of uint64_t
-template <uint8_t bits_g>
+template <uint8_t bits>
+requires((bits >= 1) && (bits <= 64))
+//requires((bits >= 1) && (bits <= 64))
 class uintx_t {
 private:
 	uint64_t Val;
-    uint8_t bits;
 
     // POV im lazy
-    constexpr inline uint64_t _formatBits(
-	    const uint64_t& val,
-	    const uint16_t& _bits
-    ) {return val & UINT64_MAX >> (64-_bits);}
+    constexpr inline uint64_t formatBits(
+		uint64_t val,
+		uint16_t bits2
+    ) {return val & (UINT64_MAX >> (64-bits2));}
 
 public:
-	uintx_t(const int64_t& val) {
-        bits = bits_g;
-		if      (bits > 64) bits = 64;
-		else if (bits < 1 ) bits = 1;
-		Val = _formatBits(val, bits);
+	uintx_t(int64_t val) {
+		Val = formatBits(val, bits);
 	}
     
     void operator= (uintx_t& val) {
-        Val = _formatBits(val.Val, bits);
+        Val = formatBits(val.Val, bits);
     }
-	void operator= (const int64_t& val) {
-		Val = _formatBits(val, bits);
+	void operator= (int64_t val) {
+		Val = formatBits(val, bits);
+	}
+	template <uint8_t otherBits>
+	void operator= (uintx_t<otherBits> val) {
+		Val = formatBits(val.Val, bits);
 	}
 
-	bool operator== (const int64_t& val) {
+
+	bool operator== (int64_t val) {
 		return (Val == val);
 	}
-    bool operator!= (const int64_t& val) {
+    bool operator!= (int64_t val) {
         return (Val != val);
     }
-    bool operator> (const int64_t& val) {
+    bool operator> (int64_t val) {
         return (Val > val);
     }
-    bool operator< (const int64_t& val) {
+    bool operator< (int64_t val) {
         return (Val < val);
     }
-    bool operator>= (const int64_t& val) {
+    bool operator>= (int64_t val) {
         return (Val >= val);
     }
-    bool operator<= (const int64_t& val) {
+    bool operator<= (int64_t val) {
         return (Val <= val);
     }
 
-	int64_t operator+ (const int64_t& val) {
-		return (_formatBits(Val + val, bits));
+	uintx_t operator+ (int64_t val) {
+		return (formatBits(Val + val, bits));
 	}
-	int64_t operator- (const int64_t& val) {
-		return (_formatBits(Val - val, bits));
+	uintx_t operator- (int64_t val) {
+		return (formatBits(Val - val, bits));
 	}
-	int64_t operator* (const int64_t& val) {
-		return (_formatBits(Val * val, bits));
+	uintx_t operator* (int64_t val) {
+		return (formatBits(Val * val, bits));
 	}
-	int64_t operator/ (const int64_t& val) {
-		return (_formatBits(Val / val, bits));
+	uintx_t operator/ (int64_t val) {
+		return (formatBits(Val / val, bits));
 	}
-	int64_t operator% (const int64_t& val) {
-		return (_formatBits(Val % val, bits));
+	uintx_t operator% (int64_t val) {
+		return (formatBits(Val % val, bits));
 	}
-	int64_t operator| (const int64_t& val) {
-		return (_formatBits(Val | val, bits));
+	uintx_t operator| (int64_t val) {
+		return (formatBits(Val | val, bits));
 	}
-	int64_t operator& (const int64_t& val) {
-		return (_formatBits(Val & val, bits));
+	uintx_t operator& (int64_t val) {
+		return (formatBits(Val & val, bits));
 	}
-	int64_t operator^ (const int64_t& val) {
-		return (_formatBits(Val ^ val, bits));
+	uintx_t operator^ (int64_t val) {
+		return (formatBits(Val ^ val, bits));
 	}
-	int64_t operator<< (const int64_t& val) {
-		return (_formatBits(Val << val, bits));
+	uintx_t operator<< (int64_t val) {
+		return (formatBits(Val << val, bits));
 	}
-	int64_t operator>> (const int64_t& val) {
-		return (_formatBits(Val >> val, bits));
+	uintx_t operator>> (int64_t val) {
+		return (formatBits(Val >> val, bits));
 	}
 
 	uintx_t& operator++ () {
-		Val = _formatBits(++Val, bits);
+		Val = formatBits(++Val, bits);
 		return *this;
 	}
 	uintx_t& operator-- () {
-		Val = _formatBits(--Val, bits);
+		Val = formatBits(--Val, bits);
 		return *this;
 	}
 	uintx_t operator++ (int) {
-		Val = _formatBits(++Val, bits);
+		Val = formatBits(++Val, bits);
 		return *this;
 	}
 	uintx_t operator-- (int) {
-		Val = _formatBits(--Val, bits);
+		Val = formatBits(--Val, bits);
 		return *this;
 	}
 
-	void operator+= (const int64_t& val) {
-		Val = _formatBits(Val+val, bits);
+	void operator+= (int64_t val) {
+		Val = formatBits(Val+val, bits);
 	}
-	void operator-= (const int64_t& val) {
-		Val = _formatBits(Val-val, bits);
+	void operator-= (int64_t val) {
+		Val = formatBits(Val-val, bits);
 	}
-	void operator*= (const int64_t& val) {
-		Val = _formatBits(Val*val, bits);
+	void operator*= (int64_t val) {
+		Val = formatBits(Val*val, bits);
 	}
-	void operator/= (const int64_t& val) {
-		Val = _formatBits(Val/val, bits);
+	void operator/= (int64_t val) {
+		Val = formatBits(Val/val, bits);
 	}
-	void operator%= (const int64_t& val) {
-		Val = _formatBits(Val%val, bits);
+	void operator%= (int64_t val) {
+		Val = formatBits(Val%val, bits);
 	}
-	void operator|= (const int64_t& val) {
-		Val = _formatBits(Val|val, bits);
+	void operator|= (int64_t val) {
+		Val = formatBits(Val|val, bits);
 	}
-	void operator&= (const int64_t& val) {
-		Val = _formatBits(Val&val, bits);
+	void operator&= (int64_t val) {
+		Val = formatBits(Val&val, bits);
 	}
-	void operator^= (const int64_t& val) {
-		Val = _formatBits(Val^val, bits);
+	void operator^= (int64_t val) {
+		Val = formatBits(Val^val, bits);
 	}
-	void operator<<= (const int64_t& val) {
-		Val = _formatBits(Val<<val, bits);
+	void operator<<= (int64_t val) {
+		Val = formatBits(Val<<val, bits);
 	}
-	void operator>>= (const int64_t& val) {
-		Val = _formatBits(Val>>val, bits);
+	void operator>>= (int64_t val) {
+		Val = formatBits(Val>>val, bits);
 	}
 
 	friend std::ostream& operator<< (
@@ -275,7 +221,7 @@ private:
 	std::vector<T> internalVec;
 	std::vector<std::string> vecLog {};
 	uint64_t callNum = 0;
-
+ 
 	void log (
 		const std::string& function,
 		const std::string& message
@@ -354,7 +300,7 @@ public:
 	}
 
 	// delete specific index
-	bool del(const uint64_t& index) {
+	bool del(uint64_t index) {
 		if (index >= internalVec.size()) {
 			log("del", "!attempted to delete value at index " + std::to_string(index) + " (out of bounds)!");
 			return false;
@@ -365,11 +311,18 @@ public:
 	}
 
 	// resize vector
-	bool resize(const uint64_t& newSize) {
+	bool resize(uint64_t newSize) {
 		internalVec.resize(newSize);
 		log("resize", "resized vector to size " + std::to_string(newSize));
 		return true;
 	}
+
+    // reverse vector
+    bool reverse() {
+        std::reverse(internalVec.begin(), internalVec.end());
+        log("reverse", "reversed vector");
+        return true;
+    }
 
 	// returns the vector but with removed duplicates
 	std::vector<T> rmDuplicates() {
@@ -488,7 +441,7 @@ public:
 	}
 
 	// get value
-	T operator[] (const uint64_t& index) {
+	T operator[] (uint64_t index) {
 		if (index >= internalVec.size()) {
 			log("operator[]", "!accessed index " + std::to_string(index) + " (out of bounds)!");
 			// fuck, what the hell is the user doing
@@ -513,6 +466,10 @@ public:
 		internalVec.pop_back();
 		log("operator--", "popped back");
 	}
+    void operator-- (int) {
+        internalVec.pop_back();
+        log("operator--", "popped back");
+    }
 
 	// append value to vector
 	void operator+= (const T& value) {
@@ -530,7 +487,7 @@ public:
 	}
 
 	// assign internal vector to new vector
-	void operator= (std::vector<T> newish) {
+	void operator= (const std::vector<T>& newish) {
 		internalVec = newish;
 		log("operator=", "assigned new vector");
 	}

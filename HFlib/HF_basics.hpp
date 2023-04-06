@@ -5,6 +5,8 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#pragma comment(lib, "Winmm.lib")
+#define UNICODE
 #else
 #include <unistd.h>
 #endif
@@ -110,10 +112,99 @@ std::vector<uint64_t> getIndexes(
 	const std::vector<T>& vector,
 	const T& value
 ) {
-	std::vector<uint16_t> indexes;
+	std::vector<uint64_t> indexes;
 	for (uint64_t i = 0; i < value.size(); i++) 
 		if (vector[i] == value) indexes.push_back(i);
 	return indexes;
 }
+
+// audio player
+class Audio {
+public:
+	Audio(const std::string& file) : File(file) {}
+
+	~Audio() {}
+
+	bool play(bool loop = false) {
+		#ifdef _WIN32
+		std::string S1 = "play " + File + (loop?" repeat":"");
+		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
+		#else
+		std::string command = "play " + audioFile;
+		system(command.c_str());
+		#endif
+
+		return true;
+	}
+
+	bool pause() {
+		#ifdef _WIN32
+		std::string S1 = "pause " + File;
+		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
+		#else
+		// ...
+		#endif
+
+		return true;
+	}
+
+	bool resume() {
+		#ifdef _WIN32
+		std::string S1 = "resume " + File;
+		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
+		#else
+		// ...
+		#endif
+
+		return true;
+	}
+
+	bool stop() {
+		#ifdef _WIN32
+		std::string S1 = "stop " + File;
+		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
+		#else
+		// ...
+		#endif
+
+		return true;
+	}
+
+	bool playFrom(int64_t from) {
+		#ifdef _WIN32
+		std::string S1 = "play " + File + " from " + std::to_string(from);
+		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
+		#else
+		// ...
+		#endif
+
+		return true;
+	}
+
+	bool play_wait() {
+		#ifdef _WIN32
+		std::string S1 = "play " + File + " wait";
+		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
+		#else
+		// ...
+		#endif
+
+		return true;
+	}
+
+	bool playFrom_wait(int64_t from) {
+		#ifdef _WIN32
+		std::string S1 = "play " + File + " from " + std::to_string(from) + " wait";
+		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
+		#else
+		// ...
+		#endif
+
+		return true;
+	}
+
+private:
+	std::string File;
+};
 
 };
