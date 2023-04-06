@@ -170,6 +170,60 @@ output:
 2
 ```
 
+##
+#### Audio
+`class Audio`
+
+A class that plays audio files. 
+
+*Note: most functionality is windows only*
+
+#### *constructors:*
+
+##### `Audio(const std::string& file)`
+
+`file`: file location of audio file. 
+
+#### *methods:*
+
+##### play
+`bool play(bool loop = false)`
+
+Plays the audio file. If `loop` is true, it will loop indefinitely. 
+
+*Note: this is the only method that works non-windows*
+
+##### pause
+`bool pause()`
+
+Pauses the audio if it is currently playing. 
+
+##### resume
+`bool resume()`
+
+Resumes the audio if it is paused. 
+
+##### stop
+`bool stop()`
+
+Stops the audio if it is playing. 
+
+##### playFrom
+`bool playFrom(int64_t from)`
+
+Plays the audio file, starting at a specific timestamp (`from`).
+
+##### play_wait
+`bool play_wait()`
+
+Plays the audio file non-asynchronously. 
+
+##### playFrom_wait
+`bool playFrom_wait(int64_t from)`
+
+Plays the audio file non-asynchronously, starting at a specific timestamp (`from`).
+
+
 #
 ### HF_math.hpp
 This file holds functions related to math
@@ -588,7 +642,7 @@ Note: `rbegin()` and `rend()` from `std::vector` have been converted into `r_beg
 
 #### *constructors:*
 
-###### `VecWrapper`
+###### `VecWrapper()`
 
 Creates the object with no values. 
 
