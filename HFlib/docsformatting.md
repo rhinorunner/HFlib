@@ -114,3 +114,10 @@ Explanation of namespace item 1.
 
 Description of variable
 ```
+
+If something is OS specific:
+```
+[name, name in code]
+###### *(OS) only*
+
+```
