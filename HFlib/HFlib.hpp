@@ -4,7 +4,7 @@
 // created by Zaine Rehman
 // from 12-7-22 to 4-5-23
 
-static constexpr char* HFL_version = "1.1.0";
+static constexpr char HFL_version[] = "1.1.0";
 
 // hflib includes
 #include "HF_types.hpp"

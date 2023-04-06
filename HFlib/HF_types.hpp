@@ -340,7 +340,7 @@ public:
 
 	// sorts, if possible
 	bool sort(bool reverse = false) {
-		try {auto test = (short)internalVec[0];}
+		try {__attribute__((unused)) auto test = (short)internalVec[0];}
 		catch (...) {
 			if (!internalVec.size()) 
 				log("sort","!failed to sort vector (size = 0)!");

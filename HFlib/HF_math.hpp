@@ -41,10 +41,13 @@ int64_t gcd(
 	const int64_t& a, 
 	const int64_t& b
 ) {
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wmisleading-indentation"
     if (!a)    return b;
     if (!b)    return a;
     if (a < b) return gcd(a, b % a);
                return gcd(b, a % b);
+	#pragma clang diagnostic pop
 }
 
 // converts a decimal to a fraction

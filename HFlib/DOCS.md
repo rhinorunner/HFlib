@@ -215,6 +215,11 @@ Stops the audio if it is playing.
 
 Plays the audio file, starting at a specific timestamp (`from`).
 
+##### playFromTo
+`bool playFromTo(int64_t from, int64_t to)`
+
+Plays the audio file, starting at a specific timestamp (`from`) and ending at another (`to`).
+
 ##### play_wait
 `bool play_wait()`
 
@@ -225,6 +230,60 @@ Plays the audio file non-asynchronously.
 
 Plays the audio file non-asynchronously, starting at a specific timestamp (`from`).
 
+##### playFromTo_wait
+`bool playFromTo_wait(int64_t from, int64_t to)`
+
+Plays the audio file non-asynchronously, starting at a specific timestamp (`from`) and ending at another (`to`).
+
+##### changeFile
+`void changeFile(const std::string& file)`
+
+Changes the file that audio is played from to `file`.
+
+##### getLength
+`int64_t getLength()`
+
+Returns the length of the audio file. 
+
+##### getPosition
+`int64_t getPosition()`
+
+Returns the timestamp of where the audio is being played from in the file. 
+
+##### getFile
+`std::string getFile()`
+
+Returns the filename of the stored file. 
+
+##### setVolume
+`bool setVolume(int64_t volume)`
+
+Sets the volume of the audio. 
+
+##### getVolume
+`int64_t getVolume()`
+
+Returns the volume that the audio is being played at. 
+
+##### setLeftChannel
+`bool setLeftChannel(int64_t volume)`
+
+Sets the volume for the left channel. 
+
+##### setRightChannel
+`bool setRightChannel(int64_t volume)`
+
+Sets the volume for the right channel. 
+
+##### getLeftChannel
+`int64_t getLeftChannel()`
+
+Returns the volume for the left channel. 
+
+##### getRightChannel
+`int64_t getRightChannel()`
+
+Returns the volume for the right channel. 
 
 #
 ### HF_math.hpp
