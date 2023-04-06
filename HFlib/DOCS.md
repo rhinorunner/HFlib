@@ -23,10 +23,12 @@ Each file holds different functions according to what they would be used for (fo
 To use, simply place the `HFlib` folder inside your project directory and include `.hpp` files from it. **Everything will be inside of the `HFL` namespace.**
 
 #### Top features
-- [`VecWrapper`](#VecWrapper)
 - [`uintx_t`](#uintx_t)
 - [`decToFrac`](#dectofrac)
 - [`BetterRand`](#betterrand)
+- [`Audio`](#audio)
+
+*Note: c++20 is required to use this library.*
 
 # 
 ### HFlib.hpp
