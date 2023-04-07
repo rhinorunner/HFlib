@@ -41,13 +41,13 @@ int64_t gcd(
 	const int64_t& a, 
 	const int64_t& b
 ) {
-	#pragma clang diagnostic push
-	#pragma clang diagnostic ignored "-Wmisleading-indentation"
+	//#pragma COMPILER diagnostic push
+	//#pragma COMPILER diagnostic ignored "-Wmisleading-indentation"
     if (!a)    return b;
     if (!b)    return a;
     if (a < b) return gcd(a, b % a);
                return gcd(b, a % b);
-	#pragma clang diagnostic pop
+	//#pragma COMPILER diagnostic pop
 }
 
 // converts a decimal to a fraction
@@ -88,16 +88,16 @@ double pyth(
 
 // solves for the quadratic formula
 // returns both solutions
-// DOES NOT WORK
+// <FIX> keeps returning NaN, NaN
 std::pair<double,double> quadratic(
 	const double& a,
 	const double& b,
 	const double& c
 ) {
 	double R1, R2;
-	try { R1 = (-b + sqrt(pow(b, 2) - 4 * a * c)) / (2 * a); } 
+	try { R1 = (-b + sqrt(pow(b,2) - 4*a*c)) / (2*a); } 
 	catch (...) {R1 = 0;}
-	try { R2 = (-b - sqrt(pow(b, 2) - 4 * a * c)) / (2 * a); } 
+	try { R2 = (-b - sqrt(pow(b,2) - 4*a*c)) / (2*a); } 
 	catch (...) {R2 = 0;}
 	return {R1,R2};
 }

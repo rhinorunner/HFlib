@@ -61,6 +61,89 @@ std::string readTypeid (
 	return "unknown";
 }
 
+// converts an ingeter into the corresponding MCI error
+std::string mciErrorLookup(int error) {
+	switch (error) {
+		case 257: return "MCIERR_INVALID_DEVICE_ID";
+		case 258: return "MCIERR_UNRECOGNIZED_KEYWORD";
+		case 259: return "MCIERR_UNRECOGNIZED_COMMAND";
+		case 260: return "MCIERR_HARDWARE";
+		case 261: return "MCIERR_INVALID_DEVICE_NAME";
+		case 262: return "MCIERR_OUT_OF_MEMORY";
+		case 263: return "MCIERR_DEVICE_OPEN";
+		case 264: return "MCIERR_CANNOT_LOAD_DRIVER";
+		case 265: return "MCIERR_MISSING_COMMAND_STRING";
+		case 266: return "MCIERR_PARAM_OVERFLOW";
+		case 267: return "MCIERR_MISSING_STRING_ARGUMENT";
+		case 268: return "MCIERR_BAD_INTEGER";
+		case 269: return "MCIERR_PARSER_INTERNAL";
+		case 270: return "MCIERR_DRIVER_INTERNAL";
+		case 271: return "MCIERR_MISSING_PARAMETER";
+		case 272: return "MCIERR_UNSUPPORTED_FUNCTION";
+		case 273: return "MCIERR_FILE_NOT_FOUND";
+		case 274: return "MCIERR_DEVICE_NOT_READY";
+		case 275: return "MCIERR_INTERNAL";
+		case 276: return "MCIERR_DRIVER";
+		case 277: return "MCIERR_CANNOT_USE_ALL";
+		case 278: return "MCIERR_MULTIPLE";
+		case 279: return "MCIERR_EXTENSION_NOT_FOUND";
+		case 280: return "MCIERR_OUTOFRANGE";
+		case 281: return "MCIERR_FLAGS_NOT_COMPATIBLE";
+		case 282: return "MCIERR_FILE_NOT_SAVED";
+		case 283: return "MCIERR_DEVICE_TYPE_REQUIRED";
+		case 284: return "MCIERR_DEVICE_LOCKED";
+		case 286: return "MCIERR_DUPLICATE_ALIAS";
+		case 287: return "MCIERR_BAD_CONSTANT";
+		case 288: return "MCIERR_MUST_USE_SHAREABLE";
+		case 289: return "MCIERR_MISSING_DEVICE_NAME";
+		case 290: return "MCIERR_BAD_TIME_FORMAT";
+		case 291: return "MCIERR_NO_CLOSING_QUOTE";
+		case 292: return "MCIERR_DUPLICATE_FLAGS";
+		case 293: return "MCIERR_INVALID_FILE";
+		case 294: return "MCIERR_NULL_PARAMETER_BLOCK";
+		case 295: return "MCIERR_UNNAMED_RESOURCE";
+		case 296: return "MCIERR_NEW_REQUIRES_ALIAS";
+		case 297: return "MCIERR_NOTIFY_ON_AUTO_OPEN";
+		case 298: return "MCIERR_NO_ELEMENT_ALLOWED";
+		case 299: return "MCIERR_NONAPPLICABLE_FUNCTION";
+		case 300: return "MCIERR_ILLEGAL_FOR_AUTO_OPEN";
+		case 301: return "MCIERR_FILENAME_REQUIRED";
+		case 302: return "MCIERR_EXTRA_CHARACTERS";
+		case 303: return "MCIERR_DEVICE_NOT_INSTALLED";
+		case 304: return "MCIERR_GET_CD";
+		case 305: return "MCIERR_SET_CD";
+		case 306: return "MCIERR_SET_DRIVE";
+		case 307: return "MCIERR_DEVICE_LENGTH";
+		case 308: return "MCIERR_DEVICE_ORD_LENGTH";
+		case 309: return "MCIERR_NO_INTEGER";
+		case 310: return "MCIERR_WAVE_OUTPUTSINUSE";
+		case 311: return "MCIERR_WAVE_SETOUTPUTINUSE";
+		case 312: return "MCIERR_WAVE_INPUTSINUSE";
+		case 313: return "MCIERR_WAVE_SETINPUTINUSE";
+		case 314: return "MCIERR_WAVE_OUTPUTUNSPECIFIED";
+		case 315: return "MCIERR_WAVE_INPUTUNSPECIFIED";
+		case 316: return "MCIERR_WAVE_OUTPUTSUNSUITABLE";
+		case 317: return "MCIERR_WAVE_SETOUTPUTUNSUITABLE";
+		case 318: return "MCIERR_WAVE_INPUTSUNSUITABLE";
+		case 319: return "MCIERR_WAVE_SETINPUTUNSUITABLE";
+		case 320: return "MCIERR_SEQ_DIV_INCOMPATIBLE";
+		case 321: return "MCIERR_SEQ_PORT_INUSE";
+		case 322: return "MCIERR_SEQ_PORT_NONEXISTENT";
+		case 323: return "MCIERR_SEQ_PORT_MAPNODEVICE";
+		case 324: return "MCIERR_SEQ_PORT_MISCERROR";
+		case 325: return "MCIERR_SEQ_TIMER";
+		case 326: return "MCIERR_SEQ_PORTUNSPECIFIED";
+		case 327: return "MCIERR_SEQ_NOMIDIPRESENT";
+		case 328: return "MCIERR_NO_WINDOW";
+		case 329: return "MCIERR_CREATEWINDOW";
+		case 330: return "MCIERR_FILE_READ";
+		case 331: return "MCIERR_FILE_WRITE";
+		case 332: return "MCIERR_NO_IDENTITY";
+		case 333: return "MCIERR_CUSTOM_DRIVER_BASE";
+	}
+	return "unknown error";
+}
+
 // terminal ASCII colors
 namespace TermColors 
 {

@@ -2,14 +2,20 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
+
+// <BAD> probably not the best thing to have in here
+// needed for Audio
+#include "HF_misc.hpp"
 
 #ifdef _WIN32
 	#include <tchar.h>
 	#include <windows.h>
-		#pragma clang diagnostic push
-		#pragma clang diagnostic ignored "-Wunknown-pragmas"
+		//#pragma COMPILER diagnostic push
+		//#pragma COMPILER diagnostic ignored "-Wunknown-pragmas"
 		#pragma comment(lib, "Winmm.lib")
-		#pragma clang diagnostic pop
+		#pragma comment(lib, "user32.lib")
+		//#pragma COMPILER diagnostic pop
 	#define UNICODE
 #else
 	#include <unistd.h>
@@ -59,6 +65,15 @@ inline void clear(uint8_t type = 3, uint16_t newLineCharNum = 72) {
 	}
 }
 
+// sleep function
+inline void sleep(uint64_t ms) {
+	#ifdef _WIN32
+	Sleep(ms);
+	#else
+	usleep(ms*1000);
+	#endif
+}
+
 // returns the name of the operating system
 inline std::string getOsName() {
 	#ifdef _WIN32
@@ -74,12 +89,30 @@ inline std::string getOsName() {
 	#else
 	return "Other";
 	#endif
+} // taken from https://stackoverflow.com/questions/15580179/how-do-i-find-the-name-of-an-operating-system
+
+// returns the name of the compiler
+inline std::string getCompilerName() {
+	#ifdef __clang__
+	return "clang";
+	#elif __GNUC__
+	return "g++";
+	#elif __MINGW32__
+	return "minGW";
+	#elif __MINGW64__
+	return "minGW64";
+	#elif _MSC_VER
+	return "msvc";
+	#else
+	return "other";
+	#endif
 }
-// taken from https://stackoverflow.com/questions/15580179/how-do-i-find-the-name-of-an-operating-system
+
+
 
 #ifdef _WIN32
-// sets the terminal cursor, doesnt seem to wrok
-void WIN_setConsoleCursor(const bool& showFlag) {
+// <FIX> sets the terminal cursor, doesnt seem to work
+void WIN_setConsoleCursor(bool showFlag) {
 	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO cursorInfo;
 	GetConsoleCursorInfo(out, &cursorInfo);
@@ -125,7 +158,7 @@ std::vector<uint64_t> getIndexes(
 // basic audio player
 class Audio {
 public:
-	Audio(const std::string& file) : File(file) {}
+	Audio(const std::string& file) : File(file) {openFile(file);}
 
 	~Audio() {}
 
@@ -148,7 +181,7 @@ public:
 		std::string S1 = "pause " + File;
 		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
 		#else
-		// ...
+		// <OSS>
 		#endif
 
 		return true;
@@ -160,7 +193,7 @@ public:
 		std::string S1 = "resume " + File;
 		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
 		#else
-		// ...
+		// <OSS>
 		#endif
 
 		return true;
@@ -172,7 +205,7 @@ public:
 		std::string S1 = "stop " + File;
 		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
 		#else
-		// ...
+		// <OSS>
 		#endif
 
 		return true;
@@ -184,7 +217,7 @@ public:
 		std::string S1 = "play " + File + " from " + std::to_string(from);
 		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
 		#else
-		// ...
+		// <OSS>
 		#endif
 
 		return true;
@@ -196,7 +229,7 @@ public:
 		std::string S1 = "play " + File + " from " + std::to_string(from) + " to " + std::to_string(to);
 		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
 		#else
-		// ...
+		// <OSS>
 		#endif
 
 		return true;
@@ -208,7 +241,7 @@ public:
 		std::string S1 = "play " + File + " wait";
 		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
 		#else
-		// ...
+		// <OSS>
 		#endif
 
 		return true;
@@ -220,7 +253,7 @@ public:
 		std::string S1 = "play " + File + " from " + std::to_string(from) + " wait";
 		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
 		#else
-		// ...
+		// <OSS>
 		#endif
 
 		return true;
@@ -232,7 +265,7 @@ public:
 		std::string S1 = "play " + File + " from " + std::to_string(from) + " to " + std::to_string(to) + " wait";
 		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
 		#else
-		// ...
+		// <OSS>
 		#endif
 
 		return true;
@@ -251,7 +284,7 @@ public:
 		mciSendString(TEXT(S1.c_str()), buffer, 128, NULL);
 		return std::stoi(buffer);
 		#else
-		// ...
+		// <OSS>
 		#endif
 	}
 
@@ -263,7 +296,7 @@ public:
 		mciSendString(TEXT(S1.c_str()), buffer, 128, NULL);
 		return std::stoi(buffer);
 		#else
-		// ...
+		// <OSS>
 		#endif
 	}
 
@@ -276,7 +309,7 @@ public:
 		std::string S1 = "setaudio " + File + " volume to " + std::to_string(volume);
 		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
 		#else
-		// ...
+		// <OSS>
 		#endif
 
 		return true;
@@ -290,7 +323,7 @@ public:
 		mciSendString(TEXT(S1.c_str()), buffer, 128, NULL);
 		return std::stoi(buffer);
 		#else
-		// ...
+		// <OSS>
 		#endif
 	}
 
@@ -300,7 +333,7 @@ public:
 		std::string S1 = "setaudio " + File + " left volume to " + std::to_string(volume);
 		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
 		#else
-		// ...
+		// <OSS>
 		#endif
 
 		return true;
@@ -312,7 +345,7 @@ public:
 		std::string S1 = "setaudio " + File + " right volume to " + std::to_string(volume);
 		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
 		#else
-		// ...
+		// <OSS>
 		#endif
 
 		return true;
@@ -326,7 +359,7 @@ public:
 		mciSendString(TEXT(S1.c_str()), buffer, 128, NULL);
 		return std::stoi(buffer);
 		#else
-		// ...
+		// <OSS>
 		#endif
 	}
 
@@ -338,12 +371,39 @@ public:
 		mciSendString(TEXT(S1.c_str()), buffer, 128, NULL);
 		return std::stoi(buffer);
 		#else
-		// ...
+		// <OSS>
 		#endif
 	}
 
 private:
 	std::string File;
+
+	// return false if file cannot be opened
+	void openFile(const std::string& file) {
+		bool opened = true;
+
+		#ifdef _WIN32
+		// check if file is empty
+		std::string S2 = "status " + file + " length";
+		char buffer[128];
+		std::string err = HFL::mciErrorLookup(
+			mciSendString(TEXT(S2.c_str()), buffer, 128, NULL)
+		);
+
+		try {
+			[[maybe_unused]] auto _ = std::stoi(buffer);
+		} catch (const std::invalid_argument& e) {
+			// file size cannot be checked
+			opened = false;
+		}
+		
+		#else
+		// <OSS>
+		#endif
+
+		if (!opened) [[unlikely]]
+			throw std::runtime_error("Failed to open audio file \"" + file + "\"\n" + err);
+	}
 };
 
 };

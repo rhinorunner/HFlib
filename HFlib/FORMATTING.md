@@ -121,3 +121,18 @@ If something is OS specific:
 ###### *(OS) only*
 
 ```
+
+##
+#### Comment tags
+
+Mostly just to keep track of things. You would put the tag in a comment next to the code that it applies to. 
+
+`<FIX>` - doesnt work, fix it later
+
+`<BAD>` - quick fix, could work better
+
+`<OSS>` - OS specific, but make cross platform later
+
+`<ODD>` - its odd but just leave it alone
+
+`<UNS>` - unsure if it works fully

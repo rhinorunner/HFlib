@@ -290,7 +290,7 @@ public:
 	}
 	// pop front
 	bool pop_front() {
-		if (internalVec.empty()) {
+		if (internalVec.empty()) [[unlikely]] {
 			log("pop_front", "!attempted to pop empty vec!");
 			return false;
 		}
@@ -301,7 +301,7 @@ public:
 
 	// delete specific index
 	bool del(uint64_t index) {
-		if (index >= internalVec.size()) {
+		if (index >= internalVec.size()) [[unlikely]] {
 			log("del", "!attempted to delete value at index " + std::to_string(index) + " (out of bounds)!");
 			return false;
 		}
@@ -340,7 +340,7 @@ public:
 
 	// sorts, if possible
 	bool sort(bool reverse = false) {
-		try {__attribute__((unused)) auto test = (short)internalVec[0];}
+		try {[[maybe_unused]] auto _ = (short)internalVec[0];}
 		catch (...) {
 			if (!internalVec.size()) 
 				log("sort","!failed to sort vector (size = 0)!");
@@ -352,9 +352,9 @@ public:
 			log("sort","!failed to sort vector (size = 0)!");
 			return false;
 		}
-		if (reverse) 
+		if (reverse) [[unlikely]]
 			std::sort(internalVec.begin(),internalVec.end(), std::greater<int>());
-		else 
+		else [[likely]]
 			std::sort(internalVec.begin(),internalVec.end());
 		// im lazy
 		if (reverse) log("sort","sorted internalVec, reversed");
@@ -442,7 +442,7 @@ public:
 
 	// get value
 	T operator[] (uint64_t index) {
-		if (index >= internalVec.size()) {
+		if (index >= internalVec.size()) [[unlikely]] {
 			log("operator[]", "!accessed index " + std::to_string(index) + " (out of bounds)!");
 			// fuck, what the hell is the user doing
 			return 1;

@@ -40,6 +40,11 @@ The main file. It includes all of the other files, so if you `include` it there 
 
 Holds the current version of HFL that is being used. 
 
+##
+#### HFL_version
+
+Macro that holds the name of the compiler. Works for GCC, Clang, MSVC, and Apple C++. 
+
 # 
 ### HF_basics.hpp
 This file holds basic functions, such as a clear screen function or a function that gets the OS name. 
@@ -78,6 +83,12 @@ output:
 ```
 You will only see me
 ```
+
+##
+#### sleep
+`inline void sleep(uint64_t ms)`
+
+Takes in an amount of milliseconds (`ms`) and sleeps for that long. 
 
 ## 
 #### getOsName
@@ -284,6 +295,24 @@ Returns the volume for the left channel.
 `int64_t getRightChannel()`
 
 Returns the volume for the right channel. 
+
+###### Example:
+
+```cpp
+#include <iostream>
+#include "HFlib/HFlib.hpp"
+
+int main() {
+	HFL::Audio song ("In_Bloom.mp3");
+	a.play(true);
+	a.setLeftChannel(0);
+	while (1);
+	return 0;
+}
+```
+output:
+
+[`In_Bloom.mp3` will be played in the right channel only, and when it ends it will loop.]
 
 #
 ### HF_math.hpp
@@ -622,6 +651,12 @@ Data is formatted as such:
 `[2]`: Element symbol
 
 `[3]`: Atomic number
+
+##
+#### mciLookupError
+`std::string mciErrorLookup(int error)`
+
+`error` is the value that `mciSendString()` (or any other function that returns an MCI error) will return. `mciLookupError()` returns a string that holds the name of that error. 
 
 #
 ### HF_types.hpp
