@@ -11,6 +11,7 @@
 #ifdef _WIN32
 	#include <tchar.h>
 	#include <windows.h>
+	#include <mmsystem.h>
 		//#pragma COMPILER diagnostic push
 		//#pragma COMPILER diagnostic ignored "-Wunknown-pragmas"
 		#pragma comment(lib, "Winmm.lib")
@@ -29,8 +30,8 @@ namespace HFL {
 // 1 = system() based clear screen
 // 2 = ANSI escape sequence
 // 3 = Windows API (not windows 3 = 2)
-// 4 = some weird sort of ANSI code?
-inline void clear(uint8_t type = 3, uint16_t newLineCharNum = 72) {
+// 4 = some weird sort of ANSI code
+inline void clear(uint8_t type = 1, uint16_t newLineCharNum = 72) {
 	#ifndef _WIN32
 	if (type == 3) type = 2;
 	#endif
@@ -41,7 +42,11 @@ inline void clear(uint8_t type = 3, uint16_t newLineCharNum = 72) {
 			break;
 
 		case 1:
-			system("cls"); // :(
+			#ifdef _WIN32
+			system("cls");
+			#else
+			system("clear");
+			#endif
 			break;
 
 		case 2:
@@ -155,12 +160,124 @@ std::vector<uint64_t> getIndexes(
 	return indexes;
 }
 
-// basic audio player
+#ifdef _WIN32
+// get keypress input
+inline uint8_t getKey() {
+	while (true) {
+		uint8_t keyIn = (uint8_t) getch();
+		if (keyIn == 3) {exit(0);}
+		return keyIn;
+	}
+}
+#else
+// get keypress input
+inline uint8_t getKey() {
+	while (true) {
+		system("stty raw");
+        uint8_t keyIn = (uint8_t) getchar(); 
+        system("stty cooked");
+		if (keyIn == 3) {exit(0);}
+		return keyIn;
+	}
+}
+#endif
+
+// gets user input in a safe way
+std::string getInput(
+	const std::string& prompt = ""
+) {
+	std::string input;
+	std::cout << prompt;
+	std::getline(std::cin, input);
+	return input;
+}
+
+// choose items in a list in a fancy way
+template <typename T>
+T chooseItem (
+	const std::vector<T>& items,
+	const std::string& prompt = "",
+	const std::vector<T>& illegalItems = {},
+	const std::string& illegalMessage = "illegal item"
+) {
+	uint16_t currentSelected = 0;
+	// make sure T can be casted to string
+	if (items.size() == 0) throw std::runtime_error("chooseItem(): 'items' cannot be emtpy.");
+	try {[[maybe_unused]] std::string _ = std::to_string(items[0]);}
+	catch (std::exception& e) {
+		throw std::runtime_error("chooseItem(): type must be castable to string.");
+	}
+	while (1) {
+		clear();
+		std::cout << prompt << '\n';
+
+		for (uint16_t i = 0; i < items.size(); i++) {
+			if (i == currentSelected) [[unlikely]] {
+				#ifdef _WIN32
+					HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+					SetConsoleTextAttribute(hConsole, 10);
+					std::cout << std::to_string(items[i]) << '\n';
+					SetConsoleTextAttribute(hConsole, 7);
+				#else
+					std::cout 
+						<< "\u001b[32m" 
+						<< std::to_string(items[i]) 
+						<< "\u001b[0m\n";
+				#endif
+			} else [[likely]] {
+				std::cout << std::to_string(items[i]) << '\n';
+			}
+		}
+
+		uint8_t key = getKey();
+		if (key == 224) {
+			uint8_t key2 = getKey(); // second number
+			switch (key2) {
+				case 72: // up
+					if (currentSelected == 0) [[unlikely]] 
+						currentSelected = items.size() - 1;
+					else [[likely]]
+						currentSelected--;
+					break;
+				case 80: // down
+					if (currentSelected == items.size() - 1) [[unlikely]] 
+						currentSelected = 0;
+					else [[likely]]
+						currentSelected++;
+					break;
+			}
+		}
+		// spacebar or enter
+		else if ((key == 32) || (key == 13)) {
+			T selected = items[currentSelected];
+			bool illegal = false;
+			for (auto x : illegalItems) 
+				if (x == selected) [[unlikely]] {
+					std::cout << illegalMessage << '\n';
+					illegal = true;
+					HFL::sleep(1000);
+					//getchar();
+					break;
+				}
+			if (!illegal) return selected;
+		}
+	}
+}
+
+// basic audio player for small files
 class Audio {
 public:
 	Audio(const std::string& file) : File(file) {openFile(file);}
 
-	~Audio() {}
+	~Audio() {
+		// close file
+		#ifdef _WIN32
+		std::string S1 = "close " + File;
+		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
+		#else
+		// <OSS>
+		#endif
+	}
 
 	// play the audio file (WORKS FOR NON-WIN)
 	bool play(bool loop = false) {
@@ -379,6 +496,7 @@ private:
 	std::string File;
 
 	// return false if file cannot be opened
+	// <ODD> not sure if this is the best way to do it
 	void openFile(const std::string& file) {
 		bool opened = true;
 
@@ -402,8 +520,8 @@ private:
 		#endif
 
 		if (!opened) [[unlikely]]
-			throw std::runtime_error("Failed to open audio file \"" + file + "\"\n" + err);
-	}
+			throw std::runtime_error("Failed to open audio file \"" + file + "\"\n" + err + ". This is most likely due to the file not existing or being too large.");
+	} 
 };
 
 };

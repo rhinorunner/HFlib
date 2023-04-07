@@ -20,7 +20,9 @@ There are currently 5 different files:
 Each file holds different functions according to what they would be used for (for example, `HF_math` has math related things and `HF_types` has variable types.) 
 `HFlib.hpp` includes all other HFlib files. 
 
-To use, simply place the `HFlib` folder inside your project directory and include `.hpp` files from it. **Everything will be inside of the `HFL` namespace.**
+To use, simply place the `HFlib` folder inside your project directory and include `HFlib.hpp`  from it. **Everything will be inside of the `HFL` namespace.**
+
+*DO NOT INCLUDE INDIVIDUAL FILES. Include `HFlib.hpp`.*
 
 #### Top features
 - [`uintx_t`](#uintx_t)
@@ -32,7 +34,7 @@ To use, simply place the `HFlib` folder inside your project directory and includ
 
 # 
 ### HFlib.hpp
-The main file. It includes all of the other files, so if you `include` it there is no reason to include any of the other files. 
+The main file. This is what you should include. 
 
 ##
 #### HFL_version
@@ -184,10 +186,40 @@ output:
 ```
 
 ##
+#### getKey
+`inline uint8_t getKey()`
+
+Gets keypress input. 
+
+##
+#### getInput
+`std::string getInput(const std::string& prompt = "")`
+
+Gets input and returns that input as a string. 
+
+`prompt`: what is said before getting input. 
+
+##
+#### chooseItem
+`template <typename T> T chooseItem (const std::vector<T>& items, const std::string& prompt = "", const std::vector<T>& illegalItems = {}, const std::string& illegalMessage = "illegal item")`
+
+Gets the user to select an item from a list. 
+
+`T`: type of the elements in the list
+
+`items`: list of elements for the user to select
+
+`prompt`: what is said before getting user input
+
+`illegalItems`: items that it will not allow the user to select
+
+`illegalMessage`: message stated if the user chooses an illegal item
+
+##
 #### Audio
 `class Audio`
 
-A class that plays audio files. 
+A class that plays audio files. **Only works for smaller files.** 
 
 *Note: most functionality is windows only*
 
