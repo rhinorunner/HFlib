@@ -192,6 +192,41 @@ std::string getInput(
 	return input;
 }
 
+// fast in range function
+constexpr inline bool inRange(
+    uint64_t val, uint64_t min, uint64_t max
+) {
+    return (((val-min) | (max-val)) >= 0);
+}
+
+uint64_t wordCount(
+    const std::string& str,
+    const std::vector<char>& delimiters 
+        = {' ',',','.','!','?','\'','\"','\n','\t'}
+) {
+    uint64_t count = 0;
+    bool inWord = false;
+    for (const char& c : str) {
+        if (inWord) {
+            if (
+                std::find(
+                    delimiters.begin(), 
+                    delimiters.end(), c
+                ) != delimiters.end()
+            ) inWord = false;
+        } 
+        else {
+            if (
+                std::find(
+                    delimiters.begin(), 
+                    delimiters.end(), c
+                ) == delimiters.end()
+            ) {inWord = true; count++;}
+        }
+    }
+    return count;
+}
+
 // choose items in a list in a fancy way
 template <typename T>
 T chooseItem (
@@ -235,12 +270,12 @@ T chooseItem (
 			switch (key2) {
 				case 72: // up
 					if (currentSelected == 0) [[unlikely]] 
-						currentSelected = items.size() - 1;
+						currentSelected = items.size()-1;
 					else [[likely]]
 						currentSelected--;
 					break;
 				case 80: // down
-					if (currentSelected == items.size() - 1) [[unlikely]] 
+					if (currentSelected == items.size()-1) [[unlikely]] 
 						currentSelected = 0;
 					else [[likely]]
 						currentSelected++;
@@ -285,7 +320,7 @@ public:
 		std::string S1 = "play " + File + (loop?" repeat":"");
 		mciSendString(TEXT(S1.c_str()), NULL, 0, NULL);
 		#else
-		std::string command = "play " + audioFile;
+		std::string command = "play " + File;
 		system(command.c_str());
 		#endif
 
@@ -402,6 +437,7 @@ public:
 		return std::stoi(buffer);
 		#else
 		// <OSS>
+		return 0;
 		#endif
 	}
 
@@ -414,6 +450,7 @@ public:
 		return std::stoi(buffer);
 		#else
 		// <OSS>
+		return 0;
 		#endif
 	}
 
@@ -441,6 +478,7 @@ public:
 		return std::stoi(buffer);
 		#else
 		// <OSS>
+		return 0;
 		#endif
 	}
 
@@ -477,6 +515,7 @@ public:
 		return std::stoi(buffer);
 		#else
 		// <OSS>
+		return 0;
 		#endif
 	}
 
@@ -489,6 +528,7 @@ public:
 		return std::stoi(buffer);
 		#else
 		// <OSS>
+		return 0;
 		#endif
 	}
 
@@ -498,6 +538,9 @@ private:
 	// return false if file cannot be opened
 	// <ODD> not sure if this is the best way to do it
 	void openFile(const std::string& file) {
+		#ifndef _WIN32
+			[[maybe_unused]]
+		#endif
 		bool opened = true;
 
 		#ifdef _WIN32
@@ -514,13 +557,13 @@ private:
 			// file size cannot be checked
 			opened = false;
 		}
+
+		if (!opened) [[unlikely]]
+			throw std::runtime_error("Failed to open audio file \"" + file + "\"\n" + err + ". This is most likely due to the file not existing or being too large.");
 		
 		#else
 		// <OSS>
 		#endif
-
-		if (!opened) [[unlikely]]
-			throw std::runtime_error("Failed to open audio file \"" + file + "\"\n" + err + ". This is most likely due to the file not existing or being too large.");
 	} 
 };
 

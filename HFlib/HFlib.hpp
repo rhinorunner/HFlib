@@ -65,6 +65,7 @@ static constexpr char HFL_version[] = "1.1.4";
 #include "HF_misc.hpp"
 
 /************************************************************************
+ * 
 Version history:
 v1.0.0 
  	- first release of HFlib!
@@ -91,4 +92,10 @@ v1.1.4
 	- added in docs to include HFlib.hpp always instead of individual files
 	- added the OS macro
 	- added multiple functions for getting user input
+v1.1.5
+	- added better support for non-windows systems
+v 1.1.7
+	- added wordCount() and inRange() to HF_basics
+	- added HF_joke :)
+	- small tweaks
 ************************************************************************/

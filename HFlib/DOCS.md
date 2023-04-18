@@ -216,6 +216,16 @@ Gets the user to select an item from a list.
 `illegalMessage`: message stated if the user chooses an illegal item
 
 ##
+#### inRange
+`constexpr inline bool inRange(uint64_t val, uint64_t min, uint64_t max)`
+
+Returns `true` if `val` is in between `min` and `max`.
+
+##
+#### wordCount
+`uint64_t wordCount(const std::string& str, const std::vector<char>& delimiters = {' ',',','.','!','?','\'','\"','\n','\t'})`
+
+##
 #### Audio
 `class Audio`
 
