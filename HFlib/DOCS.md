@@ -2,8 +2,10 @@
 # Helpful Functions Libary
 
 ###### created by Zaine Rehman
-###### *Latest release is v1.0.0, published 3-23-23* <!-- :) -->
-
+###### contributors: Bertie
+##
+###### *First release was v1.0.0, published 3-23-23*
+###### *Latest release is v2.0.0, published 7-16-23*
 # 
 ### What is Helpful Functions Library?
 Helpful Functions Library (HFlib) is a collection of C++ implementation files that provide helpful functions, classes, and variables for various different purposes.
@@ -20,7 +22,7 @@ There are currently 5 different files:
 Each file holds different functions according to what they would be used for (for example, `HF_math` has math related things and `HF_types` has variable types.) 
 `HFlib.hpp` includes all other HFlib files. 
 
-To use, simply place the `HFlib` folder inside your project directory and include `HFlib.hpp`  from it. **Everything will be inside of the `HFL` namespace.**
+To use, simply place the `HFlib` folder inside your project directory and include `HFlib.hpp`  from it. **Everything will be inside of the `hfl` namespace.**
 
 *DO NOT INCLUDE INDIVIDUAL FILES. Include `HFlib.hpp`.*
 
@@ -29,6 +31,7 @@ To use, simply place the `HFlib` folder inside your project directory and includ
 - [`decToFrac`](#dectofrac)
 - [`BetterRand`](#betterrand)
 - [`Audio`](#audio)
+- [`Matrix`](#matrix)
 
 *Note: c++20 is required to use this library.*
 
@@ -40,7 +43,7 @@ The main file. This is what you should include.
 #### HFL_version
 `static constexpr char* HFL_version`
 
-Holds the current version of HFL that is being used. 
+Holds the current version of hfl that is being used. 
 
 ##
 #### HFL_version
@@ -76,7 +79,7 @@ types (changed with `type`):
 
 int main() {
     std::cout << "I will be cleared\n";
-    HFL::clear();
+    hfl::clear();
     std::cout << "You will only see me\n";
     return 0;
 }
@@ -104,7 +107,7 @@ Returns a string that holds the name of the OS being used.
 #include "HFlib/HFlib.hpp"
 
 int main() {
-    std::cout << HFL::getOsName() << '\n';
+    std::cout << hfl::getOsName() << '\n';
     return 0;
 }
 ```
@@ -132,7 +135,7 @@ Sets the console from the default 8-bits to 16-bits.
 
 int main() {
     std::cout << "∞" << '\n';
-    HFL::WIN_utf16Console();
+    hfl::WIN_utf16Console();
     std::cout << "∞" << '\n';
     return 0;
 }
@@ -143,7 +146,7 @@ output:
 Active code page: 65001
 ∞
 ```
-*please note that `Active code page: 65001` will be printed when the function is used, so using [`HFL::clear()`](#clear) afterward is recommended.*
+*please note that `Active code page: 65001` will be printed when the function is used, so using [`hfl::clear()`](#clear) afterward is recommended.*
 
 ##
 #### strToCVec
@@ -170,7 +173,7 @@ Returns the indexes that the vector has the values at.
 
 int main() {
     std::vector<char> vec {'a','b','a','e'};
-    auto indexes = HFL::getIndexes<char>(vec,'a');
+    auto indexes = hfl::getIndexes<char>(vec,'a');
 
     for (auto& i : indexes) {
         std::cout << (short)i << '\n';
@@ -225,152 +228,59 @@ Returns `true` if `val` is in between `min` and `max`.
 #### wordCount
 `uint64_t wordCount(const std::string& str, const std::vector<char>& delimiters = {' ',',','.','!','?','\'','\"','\n','\t'})`
 
+Returns the amount of words in a string. 
+
 ##
-#### Audio
-`class Audio`
+#### max
+`template <typename T> inline T max(const T* arr)`
+`template <typename T> inline T max(const T* arr, uint64_t size)`
 
-A class that plays audio files. **Only works for smaller files.** 
+Returns the greatest value in a container.
 
-*Note: most functionality is windows only*
+##
+#### min
+`template <typename T> inline T min(const T* arr)`
+`template <typename T> inline T min(const T* arr, uint64_t size)`
 
-#### *constructors:*
+Returns the smallest value in a container.
 
-##### `Audio(const std::string& file)`
+##
+#### mean
+`template <typename T> inline T mean(const T* arr)`
+`template <typename T> inline T mean(const T* arr, uint64_t size)`
 
-`file`: file location of audio file. 
+Returns the mean of a container.
 
-#### *methods:*
+##
+#### subtractVec
+`template <typename T> std::vector<T> subtractVec(std::vector<T> vec1,const std::vector<T>& vec2)`
 
-##### play
-`bool play(bool loop = false)`
+Subtracts `vec2` from `vec1`.
 
-Plays the audio file. If `loop` is true, it will loop indefinitely. 
+##
+#### timeToRun
+`template <typename T> double timeToRun(T (*toRun)())`
 
-*Note: this is the only method that works non-windows*
+Returns the time taken to run `toRun` function.
 
-##### pause
-`bool pause()`
+##
+#### INT4_MAX
 
-Pauses the audio if it is currently playing. 
+4 bit integer maximum. 
 
-##### resume
-`bool resume()`
+##
+#### INT4_MIN
 
-Resumes the audio if it is paused. 
+4 bit integer minimum. 
 
-##### stop
-`bool stop()`
+##
+#### UINT4_MAX
 
-Stops the audio if it is playing. 
-
-##### playFrom
-`bool playFrom(int64_t from)`
-
-Plays the audio file, starting at a specific timestamp (`from`).
-
-##### playFromTo
-`bool playFromTo(int64_t from, int64_t to)`
-
-Plays the audio file, starting at a specific timestamp (`from`) and ending at another (`to`).
-
-##### play_wait
-`bool play_wait()`
-
-Plays the audio file non-asynchronously. 
-
-##### playFrom_wait
-`bool playFrom_wait(int64_t from)`
-
-Plays the audio file non-asynchronously, starting at a specific timestamp (`from`).
-
-##### playFromTo_wait
-`bool playFromTo_wait(int64_t from, int64_t to)`
-
-Plays the audio file non-asynchronously, starting at a specific timestamp (`from`) and ending at another (`to`).
-
-##### changeFile
-`void changeFile(const std::string& file)`
-
-Changes the file that audio is played from to `file`.
-
-##### getLength
-`int64_t getLength()`
-
-Returns the length of the audio file. 
-
-##### getPosition
-`int64_t getPosition()`
-
-Returns the timestamp of where the audio is being played from in the file. 
-
-##### getFile
-`std::string getFile()`
-
-Returns the filename of the stored file. 
-
-##### setVolume
-`bool setVolume(int64_t volume)`
-
-Sets the volume of the audio. 
-
-##### getVolume
-`int64_t getVolume()`
-
-Returns the volume that the audio is being played at. 
-
-##### setLeftChannel
-`bool setLeftChannel(int64_t volume)`
-
-Sets the volume for the left channel. 
-
-##### setRightChannel
-`bool setRightChannel(int64_t volume)`
-
-Sets the volume for the right channel. 
-
-##### getLeftChannel
-`int64_t getLeftChannel()`
-
-Returns the volume for the left channel. 
-
-##### getRightChannel
-`int64_t getRightChannel()`
-
-Returns the volume for the right channel. 
-
-###### Example:
-
-```cpp
-#include <iostream>
-#include "HFlib/HFlib.hpp"
-
-int main() {
-	HFL::Audio song ("In_Bloom.mp3");
-	a.play(true);
-	a.setLeftChannel(0);
-	while (1);
-	return 0;
-}
-```
-output:
-
-[`In_Bloom.mp3` will be played in the right channel only, and when it ends it will loop.]
+Unsigned 4 bit integer maximum. 
 
 #
 ### HF_math.hpp
-This file holds functions related to math
-
-##
-#### radToDeg
-`constexpr double radToDeg(const double& rad)`
-
-Converts a radian value to degrees. 
-
-##
-#### degToRad
-`constexpr double degToRad(const double& deg)`
-
-Converts a degree value to radians. 
+This file holds functions and classes related to math
 
 ##
 #### normalizeAngle
@@ -461,19 +371,49 @@ output:
 ```
 
 ##
-#### pyth
-`double pyth(const char& side, const double& val1, const double& val2`
+#### rand64
+`inline uint64_t rand64(uint64_t seed = rand())`
 
-Solves for a missing triangle side using the pythagorean theorem. 
-Input the side to solve for (`side`) and the 2 side values (`val1`,`val2`). 
-If solving for A or B, use `val1` as side C. 
+Returns a random 64 bit integer.
 
 ##
-#### quadratic
-`std::pair<double,double> quadratic(const double& a,const double& b,const double& c)`
-###### !!! DOES NOT WORK !!!
+#### factorial
+`constexpr inline double factorial(uint64_t num)`
 
-Solves the quadratic formula and returns both the + and - answers (if an answer is impossible then 0 will be returned)
+Rudimentary factorial function.
+
+##
+#### getPrimes
+`std::vector<uint64_t> getPrimes(uint64_t ceiling)`
+
+Returns all of the prime numbers up to a ceiling value.
+
+##
+#### isPrime
+`constexpr bool isPrime(uint64_t n)`
+
+Returns `true` if `n` is a prime number.
+
+##
+#### Real
+`Real`
+
+A virtual class used that generalizes over mathematical object that can be converted a real number.
+
+#### *constructors:*
+
+No constructors exist for Real, though all other applicable classes will be able to be used as such.
+
+#### *methods:*
+
+##### method name
+`eval`
+
+virtual
+
+Returns a double based on the internal state of the class. Virtual with no default implementation. 
+
+is impossible then 0 will be returned
 
 ##
 ##### formatBits
@@ -496,43 +436,46 @@ output:
 ```
 
 ##
-#### BetterRand
-`class BetterRand`
+#### Rand
+`class Rand`
 
 A class that provides better random numbers than `random()` or `rand()`. 
 
 ##### *constructors:*
 
-###### `BetterRand(const uint64_t& ExtraRand = 0)`
-`ExtraRand`: adds its value to the randomly generated number before it is returned in `genRand()`. 
+###### `Rand(int64_t)`
+Constructs a random number generator using the provided seed.
+
+###### `Rand(void)`
+Constructs a random number generator using the system time.
 
 ##### *methods:*
 
-##### genRand
-`uint64_t genRand(const uint64_t &extra = 4, bool resetExtraRand = true, uint64_t resetERextraIt = 2)`
+##### private genRand
+`int64_t genRand()`
 
 Returns a random number. 
-The 3 parameters create more randomness, it's kind of unnecessary to pass values in honestly. 
 
-###### Example:
-```cpp
-#include <iostream>
-#include "HFlib/HFlib.hpp"
+##### getSample
+`double getSample()`
 
-int main() {
-	HFL::BetterRand rand;
-	std::cout << rand.genRand() << '\n';
-	std::cout << rand.genRand(444) << '\n';
-	std::cout << rand.genRand(2894,4925,3425) << '\n';
-    return 0;
-}
-```
-output:
-```
-4199046835170
-462494432314221199
-14601681548741031733
-```
+Returns a random number processed via a gaussian. 
+
+##### getSampleCustom(int64_t, int64_t)
+`double getSampleCustom(int64_t sigma, int64_t mu)`
+
+Returns a random number through a gaussian with given standard deviation and mean. 
+
+##### getInt
+`int64_t getInt()`
+
+Returns a random integer. 
+
+##### genFloat
+`double genRand()`
+
+Returns a random floating point number. 
+
 
 #### constants
 
@@ -560,6 +503,7 @@ A namespace full of mathematical constants.
 `constexpr double magicAngle = 0.9553166181245092;`
 
 `constexpr double primeConst = 0.4146825098511116;`
+
 
 #
 ### HF_misc.hpp
@@ -700,6 +644,18 @@ Data is formatted as such:
 
 `error` is the value that `mciSendString()` (or any other function that returns an MCI error) will return. `mciLookupError()` returns a string that holds the name of that error. 
 
+##
+#### encrypt
+`std::string encrypt(const std::string& data, uint32_t key, uint32_t key2 = 0)`
+
+Encrypts a string. 
+
+##
+#### decrypt
+`std::string decrypt(const std::string& data, uint32_t key, uint32_t key2 = 0)`
+
+Decrypts a string. 
+
 #
 ### HF_types.hpp
 
@@ -727,17 +683,38 @@ This class can also be casted into any integer type.
 If true, `inf_t` will print an infinity ascii symbol to the terminal when using the `std::ostream` operator. If false, it outputs `inf` instead. False by default.
 
 ##
+#### Nibble2
+
+`struct Nibble2`
+
+Stores 2 nibbles in 1 byte
+
+#### *constructors*
+
+##### `Nibble2(uint8_t val1, uint8_t val2)`
+
+#### *methods*
+
+##### val1
+`val1()`
+
+Returns the 1st value.
+
+##### val2
+`val2()`
+
+Returns the 2nd value.
+
+##
 #### uintx_t
 
 `template <uint8_t bits_g> class uintx_t`
 
-A class that acts as an unsigned integer with a variable amount of bits. 
+A class that acts as an unsigned integer with a variable amount of bits. You can treat it exactly like any other integer type. 
 
 `<uint8_t bits_g>`: the amount of bits that the value will change according to. 
 
 All values will be stored with 64 bits. Lowering the bits value will not make it take up less memory. 
-
-Some use cases, such as assigning one `uintx_t` to another, will not work and requires you to cast the `uintx_t` to an integer before using it. 
 
 #### *constructors:*
 
@@ -800,7 +777,7 @@ Note: `HFL_TYPES_VecWrapper_logByDefault` is true by default.
 #### printSep
 `std::string printSep = ", ";`
 
-When the vector is turned into a string (`std::ostream operator<<`, `vToStr()`), it will use `printSep` as a separator between values. 
+When the vector is turned into a string (`friend operator<<`, `vToStr()`), it will use `printSep` as a separator between values. 
 
 #### *methods:*
 
@@ -872,7 +849,7 @@ Adds a value to the back of the vector.
 
 Adds the values of another `std::vector` (with the same type) to the back of the vector. 
 
-##### std::ostream operator<<
+##### friend operator<<
 `friend std::ostream& operator<<`
 
 Can be used with `std::cout` (or any other `std::ostream` `<<` operator use), and returns all the values inside the vector with `printSep` as the separator. 
@@ -883,7 +860,7 @@ Can be used with `std::cout` (or any other `std::ostream` `<<` operator use), an
 #include "HFlib/HFlib.hpp"
 
 int main() {
-	HFL::VecWrapper<int> vec {4,-234,0,0,3,4,5,6};
+	hfl::VecWrapper<int> vec {4,-234,0,0,3,4,5,6};
 
 	std::cout << vec << '\n';
 
@@ -909,12 +886,12 @@ output:
 4 -234 0 3 5 6
 {[call 0] [constructor] : constructed wrapper with packed args}
 {[call 1] [vToStr] : returned vector as string}
-{[call 2] [std::ostream operator<<] : printed vector}
+{[call 2] [friend operator<<] : printed vector}
 {[call 3] [rmDuplicates] : returned a duplicate-free vector}
 
 {[call 0] [constructor] : constructed wrapper with packed args}
 {[call 1] [vToStr] : returned vector as string}
-{[call 2] [std::ostream operator<<] : printed vector}
+{[call 2] [friend operator<<] : printed vector}
 {[call 3] [rmDuplicates] : returned a duplicate-free vector}
 {[call 4] [logToStr] : returned log as string}
 {[call 5] [operator--] : popped back}
@@ -924,7 +901,125 @@ output:
 
 ##
 #### HFL_TYPES_VecWrapper_logByDefault
-
 `static bool HFL_TYPES_VecWrapper_logByDefault = true;`
 
 If true, `VecWrapper` will log all interactions by default. True by default. 
+
+##
+#### Matrix
+`template <uint16_t Rows, uint16_t Columns> class Matrix `
+
+A matrix class for storing and performing operations on matrices. 
+
+#### *constructors:*
+
+##### `Matrix(const std::initializer_list<std::initializer_list<float>>& array)`
+
+Sets up the matrix with the argument values. The list must be of the proper dimensions. 
+
+##### `Matrix()`
+
+Sets up the matrix with 0 as all values. 
+
+#### *methods:*
+
+##### transpose()
+`Matrix transpose()`
+
+Returns the matrix, but transposed. 
+
+##### determinant()
+`double determinant()`
+
+Returns the determinant of the matrix. 
+
+#### *operators:*
+
+##### operator+
+`Matrix operator+ (const Matrix& other)`
+
+Returns the matrix with the values of the other matrix added. 
+
+##### operator-
+`Matrix operator- (const Matrix& other)`
+
+Returns the matrix with the values of the other matrix subtracted.
+
+##### operator+=
+`Matrix operator+= (const Matrix& other)`
+
+Adds the values of another matrix to the matrix. 
+
+##### operator-=
+`Matrix operator-= (const Matrix& other)`
+
+Subtracts the values of another matrix to the matrix. 
+
+##### operator*
+`template <uint16_t otherRows, uint16_t otherColumns> Matrix<Rows,otherColumns> operator* (const Matrix<otherRows,otherColumns>& other)`
+
+Returns the dot product of the matrix and the argument matrix. 
+
+`template <typename T> Matrix<Rows,1> operator* (const std::vector<T>& vec)`
+
+Returns the dot product of the matrix and the argument vector. 
+
+`Matrix operator* (double scalar)`
+
+Returns the matrix multiplied by a scalar value. 
+
+##### operator*=
+`template <uint16_t otherRows, uint16_t otherColumns> Matrix<Rows,otherColumns> operator*= (const Matrix<otherRows,otherColumns>& other)`
+
+Sets the matrix value as the dot product of the matrix and the argument matrix. 
+
+`template <typename T> Matrix<Rows,1> operator*= (const std::vector<T>& vec)`
+
+Sets the matrix value as the dot product of the matrix and the vector. 
+
+`Matrix operator*= (double scalar)`
+
+Sets the matrix value as the matrix multiplied by a scalar value. 
+
+##### friend operator<<
+`friend std::ostream& operator<<`
+
+Returns a string with the values of the matrix in a print-friendly way. 
+
+###### Example:
+
+
+
+##
+#### EasyTypes
+
+A namespace with shorter names for types. 
+
+`typedef unsigned char byte;`
+
+`typedef unsigned char u8;`
+
+`typedef unsigned short u16;`
+
+`typedef unsigned int u32;`
+
+`typedef unsigned long long u64;`
+
+`typedef char i8;`
+
+`typedef short i16;`
+
+`typedef int i32;`
+
+`typedef long long i64;`
+
+`typedef float f32;`
+
+`typedef double f64;`
+
+`typedef std::string string;`
+
+`typedef const char* cstring;`
+
+#
+### Thank you for using HFlib

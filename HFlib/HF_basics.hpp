@@ -3,35 +3,41 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
-// <BAD> probably not the best thing to have in here
-// needed for Audio
-#include "HF_misc.hpp"
+#include <algorithm>
 
 #ifdef _WIN32
 	#include <tchar.h>
 	#include <windows.h>
 	#include <mmsystem.h>
-		//#pragma COMPILER diagnostic push
-		//#pragma COMPILER diagnostic ignored "-Wunknown-pragmas"
-		#pragma comment(lib, "Winmm.lib")
-		#pragma comment(lib, "user32.lib")
-		//#pragma COMPILER diagnostic pop
+	#include <conio.h>
 	#define UNICODE
 #else
 	#include <unistd.h>
 #endif
 
-// Helpful Functions library
-namespace HFL {
+#define  INT4_MAX  7
+#define  INT4_MIN -8
+#define UINT4_MAX  15
 
-// clear screen function
-// 0 = 72 newlines (can be changed)
-// 1 = system() based clear screen
-// 2 = ANSI escape sequence
-// 3 = Windows API (not windows 3 = 2)
-// 4 = some weird sort of ANSI code
-inline void clear(uint8_t type = 1, uint16_t newLineCharNum = 72) {
+static const unsigned __int128 UINT128_MAX = __uint128_t(__int128_t(-1L));
+static const          __int128  INT128_MAX = UINT128_MAX >> 1;
+static const          __int128  INT128_MIN = -INT128_MAX - 1;
+
+#define MAX(a,b) (a > b ? a : b)
+#define MIN(a,b) (a < b ? a : b)
+
+// Helpful Functions library
+namespace hfl {
+
+/**
+ * @brief Clears the screen. 
+ * 
+ * @param type 0 = 72 newlines (can be changed), 1 = system() based clear screen, 2 = ANSI escape sequence, 3 = Windows API, 4 = ANSI code
+ * @param newLineCharNum the number of newlines to print (only for type 0)
+ * 
+ * @note type 3 is only available on Windows and will default to type 2
+*/
+inline void clear(uint8_t type = 3, uint16_t newLineCharNum = 72) {
 	#ifndef _WIN32
 	if (type == 3) type = 2;
 	#endif
@@ -70,7 +76,11 @@ inline void clear(uint8_t type = 1, uint16_t newLineCharNum = 72) {
 	}
 }
 
-// sleep function
+/**
+ * @brief Sleeps for a certain amount of milliseconds. 
+ * 
+ * @param ms the number of milliseconds to sleep for
+*/
 inline void sleep(uint64_t ms) {
 	#ifdef _WIN32
 	Sleep(ms);
@@ -79,7 +89,11 @@ inline void sleep(uint64_t ms) {
 	#endif
 }
 
-// returns the name of the operating system
+/**
+ * @brief Returns the name of the current operating system. 
+ * 
+ * @return a string with the name of the current operating system
+*/
 inline std::string getOsName() {
 	#ifdef _WIN32
 	return "Windows";
@@ -96,7 +110,11 @@ inline std::string getOsName() {
 	#endif
 } // taken from https://stackoverflow.com/questions/15580179/how-do-i-find-the-name-of-an-operating-system
 
-// returns the name of the compiler
+/** 
+ * @brief Returns the name of the current compiler.
+ * 
+ * @return a string with the name of the current compiler
+*/
 inline std::string getCompilerName() {
 	#ifdef __clang__
 	return "clang";
@@ -113,11 +131,18 @@ inline std::string getCompilerName() {
 	#endif
 }
 
-
-
 #ifdef _WIN32
 // <FIX> sets the terminal cursor, doesnt seem to work
-void WIN_setConsoleCursor(bool showFlag) {
+
+/** 
+ * @brief Sets the console cursor visibility.
+ * 
+ * @param showFlag true = show cursor, false = hide cursor
+ * 
+ * @note Windows only
+ * @warning DOES NOT WORK
+*/
+void setConsoleCursor(bool showFlag) {
 	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO cursorInfo;
 	GetConsoleCursorInfo(out, &cursorInfo);
@@ -125,30 +150,181 @@ void WIN_setConsoleCursor(bool showFlag) {
 	SetConsoleCursorInfo(out, &cursorInfo);
 }
 
-// sets the console to utf-16
-inline void WIN_utf16Console() {system("chcp 65001");}
+/**
+ * @brief Sets the console to UTF-16.
+ * 
+ * @note Windows only
+*/
+inline void utf16Console() {system("chcp 65001");}
 
 #endif
 
-// convert string to vector<char>
-std::vector<char> strToCVec(const std::string& str) {
-	std::vector<char> converted;
-	for (char x : str) {
-		converted.push_back(x);
+/**
+ * @brief Returns the mean of any container
+ * 
+ * @tparam T the type of the container
+ * 
+ * @param arr the container to find the mean of
+*/
+template <typename T>
+inline double mean(const T& arr) {
+	try { [[maybe_unused]] auto size = arr.size(); } 
+	catch (...) {
+		throw std::invalid_argument("Container must have a size() method");
 	}
-	return converted;
+	if (arr.size() == 0) 
+		throw std::invalid_argument("Container must have a size > 0");
+	try { [[maybe_unused]] auto test = arr.begin(); }
+	catch (...) {
+		throw std::invalid_argument("Container must have a begin() method");
+	}
+	try { [[maybe_unused]] auto test = *arr.begin() + 1; } 
+	catch (...) {
+		throw std::invalid_argument("Container must be of an integer type");
+	}
+
+	double sum = 0;
+	for (auto& i : arr) sum += i;
+	return sum / arr.size();
+}
+/**
+ * @brief Returns the mean of any array
+ * 
+ * @tparam T the type of the array
+ * 
+ * @param arr the container to find the mean of
+ * @param size size of the array
+ * 
+ * @return the mean of the array
+*/
+template <typename T>
+inline double mean(const T* arr, uint64_t size) {
+	if (size == 0) throw std::invalid_argument("Array must have a size > 0");
+	try { [[maybe_unused]] auto test = *arr[0] + 1; } 
+	catch (...) {
+		throw std::invalid_argument("Array must be of an integer type");
+	}
+	
+	double sum = 0;
+	for (uint64_t i = 0; i < size; ++i) sum += arr[i];
+	return sum / size;
 }
 
-// convert vector<char> to string
-std::string CVecToStr(const std::vector<char>& cvec) {
-	std::string converted;
-	for (char x : cvec) {
-		converted += x;
+/**
+ * @brief Returns the smallest value inside a container. 
+ * 
+ * @tparam T the type of the container
+ * 
+ * @param arr the container to find the smallest value of
+ * 
+ * @return the smallest value inside the container
+*/
+template <typename T>
+inline T min(const T& arr) {
+	try { [[maybe_unused]] auto size = arr.size(); } 
+	catch (...) {
+		throw std::invalid_argument("Container must have a size() method");
 	}
-	return converted;
+	if (arr.size() == 0) 
+		throw std::invalid_argument("Container must have a size > 0");
+	try { [[maybe_unused]] auto test = arr.begin(); }
+	catch (...) {
+		throw std::invalid_argument("Container must have a begin() method");
+	}
+	try { [[maybe_unused]] auto test = *arr.begin() + 1; } 
+	catch (...) {
+		throw std::invalid_argument("Container must be of an integer type");
+	}
+
+	T min = arr[0];
+	for (auto& i : arr) if (i < min) min = i;
+	return min;
+}
+/**
+ * @brief Returns the smallest value inside an array. 
+ * 
+ * @tparam T the type of the array
+ * 
+ * @param arr the array to find the smallest value of
+ * @param size size of the array
+ * 
+ * @return the smallest value inside the array
+*/
+template <typename T>
+inline T min(const T* arr, uint64_t size) {
+	if (size == 0) throw std::invalid_argument("Array must have a size > 0");
+	try { [[maybe_unused]] auto test = *arr[0] + 1; } 
+	catch (...) {
+		throw std::invalid_argument("Array must be of an integer type");
+	}
+	
+	T min = arr[0];
+	for (uint64_t i = 0; i < size; ++i) if (arr[i] < min) min = arr[i];
+	return min;
 }
 
-// returns the index(es) of a value in a vector
+/**
+ * @brief Returns the largest value inside a container. 
+ * 
+ * @tparam T the type of the container
+ * 
+ * @param arr the container to find the largest value of
+ * 
+ * @return the largest value inside the container
+*/
+template <typename T>
+inline T max(const T& arr) {
+	try { [[maybe_unused]] auto size = arr.size(); } 
+	catch (...) {
+		throw std::invalid_argument("Container must have a size() method");
+	}
+	if (arr.size() == 0) 
+		throw std::invalid_argument("Container must have a size > 0");
+	try { [[maybe_unused]] auto test = arr.begin(); }
+	catch (...) {
+		throw std::invalid_argument("Container must have a begin() method");
+	}
+	try { [[maybe_unused]] auto test = *arr.begin() + 1; } 
+	catch (...) {
+		throw std::invalid_argument("Container must be of an integer type");
+	}
+
+	T max = arr[0];
+	for (auto& i : arr) if (i > max) max = i;
+	return max;
+}
+/**
+ * @brief Returns the largest value inside an array. 
+ * 
+ * @tparam T the type of the array
+ * 
+ * @param arr the array to find the largest value of
+ * @param size size of the array
+ * 
+ * @return the largest value inside the array
+*/
+template <typename T>
+inline T max(const T* arr, uint64_t size) {
+	if (size == 0) throw std::invalid_argument("Array must have a size > 0");
+	try { [[maybe_unused]] auto test = *arr[0] + 1; } 
+	catch (...) {
+		throw std::invalid_argument("Array must be of an integer type");
+	}
+	
+	T max = arr[0];
+	for (uint64_t i = 0; i < size; ++i) if (arr[i] > max) max = arr[i];
+	return max;
+}
+
+/**
+ * @brief Returns the index(es) of a value in a vector.
+ * 
+ * @tparam T the type of the vector
+ * @param vector the vector to search
+ * @param value the value to search for
+ * 
+ * @return a vector<uint64_t> with the index(es) of the value in the vector
+*/
 template <typename T>
 std::vector<uint64_t> getIndexes(
 	const std::vector<T>& vector,
@@ -161,7 +337,11 @@ std::vector<uint64_t> getIndexes(
 }
 
 #ifdef _WIN32
-// get keypress input
+/**
+ * @brief Gets keypress input.
+ * 
+ * @return the keypress input
+*/
 inline uint8_t getKey() {
 	while (true) {
 		uint8_t keyIn = (uint8_t) getch();
@@ -170,7 +350,11 @@ inline uint8_t getKey() {
 	}
 }
 #else
-// get keypress input
+/**
+ * @brief Gets keypress input.
+ * 
+ * @return the keypress input
+*/
 inline uint8_t getKey() {
 	while (true) {
 		system("stty raw");
@@ -182,7 +366,41 @@ inline uint8_t getKey() {
 }
 #endif
 
-// gets user input in a safe way
+/**
+ * @brief vec2 from vec1
+ * 
+ * @tparam T the type of the vectors
+ * 
+ * @param vec1 the vector to subtract from
+ * @param vec2 the vector to subtract
+ * 
+ * @return vec1 - vec2
+ */
+template <typename T>
+std::vector<T> subtractVec(
+	std::vector<T> vec1,
+	const std::vector<T>& vec2
+) {
+	// find items in vec2 and if they are in vec1, remove them
+	// then return vec1
+	for (auto i : vec2) {
+		for (uint16_t c = 0; c < vec1.size(); ++c) {
+			if (vec1[c] == i) {
+				vec1.erase(vec1.begin()+c);
+				break;
+			}
+		}
+	}
+	return vec1;
+}
+
+/**
+ * @brief Gets user input in a safe way.
+ * 
+ * @param prompt the prompt to display
+ * 
+ * @return the user input
+*/
 std::string getInput(
 	const std::string& prompt = ""
 ) {
@@ -193,12 +411,29 @@ std::string getInput(
 }
 
 // fast in range function
+/**
+ * @brief Checks if a value is in a range, quickly. 
+ * 
+ * @param val the value to check
+ * @param min the minimum value of the range
+ * @param max the maximum value of the range
+ * 
+ * @return true if the value is in the range, false otherwise
+*/
 constexpr inline bool inRange(
     uint64_t val, uint64_t min, uint64_t max
 ) {
-    return (((val-min) | (max-val)) >= 0);
+    return ((val-min) | (max-val)) >= 0;
 }
 
+/**
+ * @brief Counts the amount of words in a string. 
+ * 
+ * @param str the string to count the words in
+ * @param delimiters the delimiters to use (default are common delimiters)
+ * 
+ * @return the amount of words in the string
+*/
 uint64_t wordCount(
     const std::string& str,
     const std::vector<char>& delimiters 
@@ -227,7 +462,37 @@ uint64_t wordCount(
     return count;
 }
 
-// choose items in a list in a fancy way
+/**
+  * Runs the argument function and returns how long it took. 
+  * 
+  * @param toRun function to be run and timed
+  * 
+  * @return time it took to run the function
+  * 
+  * @note the tested function must have no parameters
+  */
+template <typename T>
+double timeToRun(T (*toRun)()) {
+	auto start = std::chrono::high_resolution_clock::now();
+	toRun();
+	auto end = std::chrono::high_resolution_clock::now();
+	return std::chrono::duration_cast<
+		std::chrono::duration<double>
+	> (end-start).count();
+}
+
+/**
+ * @brief Choose an item from a vector in a fancy way. 
+ * 
+ * @tparam T the type of the items in vector
+ * 
+ * @param items the vector of items to choose from
+ * @param prompt the prompt to display before choosing
+ * @param illegalItems the items that are illegal to choose
+ * @param illegalMessage the message to display if an illegal item is chosen
+ * 
+ * @return the chosen item
+*/
 template <typename T>
 T chooseItem (
 	const std::vector<T>& items,
@@ -237,16 +502,17 @@ T chooseItem (
 ) {
 	uint16_t currentSelected = 0;
 	// make sure T can be casted to string
-	if (items.size() == 0) throw std::runtime_error("chooseItem(): 'items' cannot be emtpy.");
+	if (!items.size()) throw std::runtime_error("chooseItem(): 'items' cannot be emtpy.");
 	try {[[maybe_unused]] std::string _ = std::to_string(items[0]);}
 	catch (std::exception& e) {
 		throw std::runtime_error("chooseItem(): type must be castable to string.");
 	}
+	if (items.empty())
 	while (1) {
 		clear();
 		std::cout << prompt << '\n';
 
-		for (uint16_t i = 0; i < items.size(); i++) {
+		for (uint16_t i = 0; i < items.size(); ++i) {
 			if (i == currentSelected) [[unlikely]] {
 				#ifdef _WIN32
 					HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -290,7 +556,7 @@ T chooseItem (
 				if (x == selected) [[unlikely]] {
 					std::cout << illegalMessage << '\n';
 					illegal = true;
-					HFL::sleep(1000);
+					hfl::sleep(1000);
 					//getchar();
 					break;
 				}
@@ -299,7 +565,10 @@ T chooseItem (
 	}
 }
 
-// basic audio player for small files
+/**
+ * @brief A basic audio player for small files.
+*/
+/*
 class Audio {
 public:
 	Audio(const std::string& file) : File(file) {openFile(file);}
@@ -547,7 +816,7 @@ private:
 		// check if file is empty
 		std::string S2 = "status " + file + " length";
 		char buffer[128];
-		std::string err = HFL::mciErrorLookup(
+		std::string err = hfl::mciErrorLookup(
 			mciSendString(TEXT(S2.c_str()), buffer, 128, NULL)
 		);
 
@@ -566,5 +835,7 @@ private:
 		#endif
 	} 
 };
+
+*/
 
 };

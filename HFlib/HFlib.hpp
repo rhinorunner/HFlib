@@ -2,15 +2,17 @@
 
 // Helpful Functions library (HFlib)
 // created by Zaine Rehman
-// additional help by (Albert Bennet??)
-// from 12-7-22 to 4-7-23
+// additional help by Bertie
+// from 12-7-22 to 7-16-23
+
+#define HFlib
 
 #ifndef __cplusplus
 // wtf are you doing...
 #error "C++ is required for compile HFlib."
 #endif
 
-static constexpr char HFL_version[] = "1.1.4";
+static constexpr char HFL_version[] = "2.0.0";
 
 #ifdef __clang__
 #define COMPILER clang
@@ -18,12 +20,12 @@ static constexpr char HFL_version[] = "1.1.4";
 #define COMPILER gcc
 #elif _MSC_VER
 #define COMPILER msvc
-// <UNS> not entirely sure if this is the correct macro for Apple C++ (xcode) 
+// not entirely sure if this is the correct macro for Apple C++ (xcode) 
 #elif __APPLE__ 
 #define COMPILER apple
 #endif
 
-// <UNS> not sure if this is the correct macro for C++23
+// not sure if this is the correct macro for C++23
 #if   __cplusplus >= 202300L
 	#define CPP_VERSION 23
 #elif __cplusplus >= 202002L
@@ -38,7 +40,7 @@ static constexpr char HFL_version[] = "1.1.4";
 	#define CPP_VERSION 98
 #endif
 
-// <UNS> not sure if its a good idea to have such a short macro name
+// not sure if its a good idea to have such a short macro name
 #ifdef _WIN64
 	#define OS win64
 #elif _WIN32
@@ -53,7 +55,6 @@ static constexpr char HFL_version[] = "1.1.4";
 	#define OS unix
 #endif
 
-
 #if CPP_VERSION < 20
 #error "C++20 is required to compile HFlib. Try using the 'std=c++20' compile flag."
 #endif
@@ -65,8 +66,8 @@ static constexpr char HFL_version[] = "1.1.4";
 #include "HF_misc.hpp"
 
 /************************************************************************
- * 
 Version history:
+
 v1.0.0 
  	- first release of HFlib!
 v1.0.1
@@ -94,8 +95,38 @@ v1.1.4
 	- added multiple functions for getting user input
 v1.1.5
 	- added better support for non-windows systems
-v 1.1.7
+v1.1.7
 	- added wordCount() and inRange() to HF_basics
 	- added HF_joke :)
 	- small tweaks
+v1.1.8
+	- added inline to most class operators
+	- small tweaks
+	- zooborkText now fully works
+	- added the HFlib macro
+v2.0.0
+	- added Doxygen comment syntax to everything
+	- fully reworked HF_math
+	- changed the namespace name from HFL to hfl
+
+	- added INT4_MAX, INT4_MIN, UINT4_MAX
+	- added a matrix class
+	- added MAX and MIN
+	- added max(), min() and mean()
+	- added subtractVec()
+	- added 128 bit integer max and mins
+	- added 128 bit integers (int128_t, uint128_t)
+	- added getPrimes() and isPrime()
+	- added rand64() and factorial()
+	- added encrypt() and decrypt()
+	- added Nibble2 struct
+	- added EasyTypes namespace
+
+	- removed Audio class because it was buggy
+	- removed strToCVec and cVecToStr because theyre useless
+
+	- removed the <TAG> comments things
+	- renamed things with "WIN_" prefixes (removed the prefix)
+	- made uintx_t work completely like any other integer type
+	- fixed up the docs a little
 ************************************************************************/

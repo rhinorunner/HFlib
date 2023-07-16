@@ -4,16 +4,10 @@
 #include <cmath>
 #include <string>
 #include <chrono>
+#include <functional>
 
 // Helpful Functions library
-namespace HFL {
-
-// converts radians to degrees
-constexpr double radToDeg(const double& rad) 
-	{return rad * (180 / 3.1415926535929);}
-// converts degrees to radians
-constexpr double degToRad(const double& deg) 
-	{return deg * (3.1415926535929 / 180);}
+namespace hfl {
 
 // converts any angle to an angle between 0 and 360
 constexpr float normalizeAngle(float angle) {
@@ -50,57 +44,78 @@ int64_t gcd(
 	//#pragma COMPILER diagnostic pop
 }
 
-// converts a decimal to a fraction
-std::string decToFrac(const double& dec) {
-	// get the decimal part
-	double decPart = dec - (int64_t)dec;
-	// get the whole part
-	int64_t wholePart = (int64_t)dec;
-	// get the numerator
-	int64_t numerator = decPart * 1000000000;
-	// get the denominator
-	int64_t denominator = 1000000000;
-	// reduce the fraction
-	int64_t gcd1 = gcd(numerator, denominator);
-	numerator /= gcd1;
-	denominator /= gcd1;
-	// return the fraction
-	return 
-		  std::to_string(wholePart) 
-		+ " " 
-		+ std::to_string(numerator) 
-		+ "/" 
-		+ std::to_string(denominator);
-}
+class Real {
+	virtual double eval();
+};
 
-// solves for thr pythagorean theorem
-// input the side to solve for and 2 side values
-// if solving for A/B use val 1 as C
-double pyth(
-	const char& side, 
-	const double& val1, 
-	const double& val2
-) {
-    return (side == 'c') ? 
-        sqrt(pow(val1, 2) + pow(val2, 2)) : 
-        sqrt(pow(val1, 2) - pow(val2, 2)) ;
-}
+class Rational: Real {
+public:
+	Rational(const double dec) {
+		double decPart = dec - (int64_t)dec;
+		// get the whole part
+		int64_t wholePart = (int64_t)dec;
+		// get the numerator
+		int64_t numerator = decPart * 1000000000;
+		// get the denominator
+		int64_t denominator = 1000000000;
+		// reduce the fraction
+		int64_t gcd1 = gcd(numerator, denominator);
+		numerator /= gcd1;
+		denominator /= gcd1;
+		// return the fraction
+		num = numerator;
+		den = denominator;
+	}
+	Rational(const int inum, const int iden) {
+		num = inum;
+		den = iden;
+	}
 
-// solves for the quadratic formula
-// returns both solutions
-// <FIX> keeps returning NaN, NaN
-std::pair<double,double> quadratic(
-	const double& a,
-	const double& b,
-	const double& c
-) {
-	double R1, R2;
-	try { R1 = (-b + sqrt(pow(b,2) - 4*a*c)) / (2*a); } 
-	catch (...) {R1 = 0;}
-	try { R2 = (-b - sqrt(pow(b,2) - 4*a*c)) / (2*a); } 
-	catch (...) {R2 = 0;}
-	return {R1,R2};
-}
+	Rational Rational::multiply(Rational y) {
+		Rational(num * y.num, den * y.den).simplify();
+	}
+
+	Rational Rational::divide(Rational y) {
+		Rational(num * y.den, den * y.num).simplify();
+	}
+
+	Rational Rational::add(Rational y) {
+		int64_t cd = gcd(den, y.den);
+		int64_t dxnum = (cd/den) * num;
+		int64_t dynum = (cd/y.den) * y.num;
+
+		return Rational(dxnum + dynum, cd).simplify();
+	}
+
+	Rational Rational::subtract(Rational y) {
+		Rational n = y.multiply(Rational(-1, 1));
+		return this->add(n);
+	}
+
+	Rational Rational::simplify() {
+		Rational(num / gcd(num, den), den/gcd(num,den));
+	}
+
+	double Rational::eval() {
+		return num / den;
+	}
+
+private:
+	int64_t num;
+	int64_t den;
+};
+
+class Radical : Real {
+private:
+	Rational deg;
+	Rational radicand;
+
+	double Radical::eval() {
+		return std::pow(radicand.eval(), 1/deg.eval());
+	}
+
+};
+
 
 // converts an unsigned int into a number with a variable amount of bits
 constexpr inline uint64_t formatBits(
@@ -108,61 +123,103 @@ constexpr inline uint64_t formatBits(
 	const uint16_t& bits
 ) {return val & UINT64_MAX >> (64-bits);}
 
-// better random!
-class BetterRand {
+class Rand {
+private:
+	int64_t seed;
+
+	Rand(int64_t s) : seed(s) {}
+	Rand(void) {
+		seed = std::chrono::system_clock::now().time_since_epoch().count() - __LINE__;
+	}
+	int64_t genRand() {
+		seed = 
+			std::chrono::system_clock::now().time_since_epoch().count() 
+			* __LINE__
+			* seed
+			>> 3
+			+ __LINE__
+		;
+		return seed;
+	}
 public:
-	// adds this to random each time, optional
-	uint64_t extraRand;
-	BetterRand(const uint64_t& ExtraRand = 0) : extraRand(ExtraRand){};
-	uint64_t genRand(
-		const uint64_t &extra = 4, 
-		bool resetExtraRand = true, 
-		uint64_t resetERextraIt = 2
-	) {
-		if (resetExtraRand)
-		  extraRand = genRand(resetERextraIt, false);
-		// set random to unix time
-		auto cool = std::chrono::system_clock::now();
-		auto very =
-		    (uint64_t)
-			std::chrono::time_point_cast<std::chrono::milliseconds>
-			(cool).time_since_epoch().count();
-		// add random()
-		if (extra >= 1)
-			very -= rand();
-		// add line number
-		if (extra >= 2)
-			very += __LINE__;
-		// add an iteration (extra = 2)
-		if (extra >= 3)
-			very += genRand(2, false);
-		// bitshift right or left based on another iteration
-		if (extra >= 4)
-			(genRand(2, false)) % 2 ? very >>= 1 : very <<= 1;
-		
-		// do stuff for the rest of the time i guess
-		if (extra >= 5) {
-			for (uint32_t i = 0; i < extra-5; i++) {
-				switch(genRand(2, false) % 4) 
-				{
-					case 0:
-						very += genRand(((genRand(2) % 4)+1), false);
-						break;
-					case 1:
-						very -= genRand(((genRand(2) % 4)+1), false);
-						break;
-					case 2:
-						very *= genRand(((genRand(2) % 4)+1), false);
-						break;
-					case 3:
-						very /= genRand(((genRand(2) % 4)+1), false);
-						break;
-				}
-			}
-		}		
-		return (very + extraRand);
+	double getSample() {
+		Gauss dist = Gauss(1, 0);
+		return dist.sample(this);
+	}
+	double getSampleCustom(int64_t sigma, int64_t mu) {
+		Gauss dist = Gauss(sigma, mu);
+		return dist.sample(this);
+	}
+	int64_t getInt() {
+		return genRand();
+	}
+	double getFloat() {
+		return (double)genRand()/(double)genRand();
 	}
 };
+
+class Gauss {
+public:
+	Gauss(int64_t sigma, int64_t mu) : stddiv(sigma), mean(mu) {}
+
+	double Gauss::get(double x) {
+		double coeff = 1/(stddiv*sqrt(constants::tau));
+		double expo = pow((x-stddiv)/mean, 2) * (-1/2);
+		return coeff * exp(expo);
+	}
+
+	double Gauss::sample(Rand* rng) {
+		return Gauss::get(rng->getFloat());
+	}
+private:
+	int64_t stddiv;
+	int64_t mean;
+};
+
+std::vector<uint64_t> getPrimes(uint64_t ceiling) {
+	std::vector<std::pair<uint64_t, bool>> primes;
+	std::vector<uint64_t> primesReturn;
+	// any number past this doesnt need to be processed in prime loop
+	uint64_t maxToAdd = (uint64_t)sqrt(ceiling);
+	
+	primes.push_back({1,false});
+	for (uint64_t i = 2; i < ceiling; i++) 
+		primes.push_back({i,true});
+
+	for (auto i : primes) {
+		// if number is prime
+		if (i.second) {
+			primesReturn.push_back(i.first);
+
+			if (i.first < maxToAdd) {
+				for (uint64_t x = (i.first * 2); x <= ceiling; x += i.first) {
+					if (x > ceiling) break;
+					primes[x-1].second = false;
+				}
+			}
+		}
+	}
+	return primesReturn;
+}
+
+constexpr bool isPrime(uint64_t n) {
+	if (n == 2) [[unlikely]] return true;
+	if ((n < 2) || !(n % 2)) return false;
+	
+	float sq = ceil(sqrt(n));
+	for (uint64_t i = 3; i <= sq; i += 2) {
+		if (!(n % i)) return false;
+	}
+	return true;
+}
+
+inline uint64_t rand64(
+	uint64_t seed = rand()
+) {return ((uint64_t)(rand()) << 32) | seed;}
+
+constexpr inline double factorial(uint64_t num) {
+	return ((num == 1) || !num) ? 1 : num * factorial(num - 1);
+}
 
 namespace constants 
 {

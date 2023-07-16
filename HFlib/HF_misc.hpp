@@ -5,13 +5,18 @@
 #include <typeinfo>
 
 // Helpful Functions library
-namespace HFL {
+namespace hfl {
 
-// converts std::type_info to a more readable std::string
-// usage: 
-// readTypeid(typeid(...).name())
-// extraInfo: if true, returns extra information about the type when present
-// NOTE: ONLY FOR GCC AS OF RIGHT NOW
+/**
+ * @brief converts std::type_info to a more readable std::string
+ * 
+ * @param type the type to convert
+ * @param extraInfo if true, returns extra information about the type when present
+ * 
+ * @return the converted type
+ * 
+ * @note ONLY FOR GCC AS OF RIGHT NOW
+*/
 std::string readTypeid (
 	const std::type_info& type, 
 	const bool& extraInfo = false
@@ -61,7 +66,79 @@ std::string readTypeid (
 	return "unknown";
 }
 
-// converts an ingeter into the corresponding MCI error
+const static std::vector<int16_t> _ENCRYPTION_ARR {
+	0x13f0, 0x2019, 0x0eee, 0x39a0, 0x1288, 0x1999,
+	0x0e0e, 0x0184, 0x6ee2, 0x71c0, 0x717a, 0x704e,
+	0x0006, 0x0fff, 0x01b0, 0x18a1, 0x0e0e, 0x0f0f
+};
+
+/**
+ * @brief Encrypts a string using a key or two.
+ * 
+ * @param data the data to encrypt
+ * @param key the key to encrypt with
+ * @param key2 the second key to encrypt with
+ * 
+ * @return the encrypted string
+*/
+std::string encrypt(
+	const std::string& data,
+	uint32_t key,
+	uint32_t key2 = 0
+) {
+	std::string toReturn;
+	for (uint64_t i = 0; i < data.size(); ++i) {
+		uint32_t toAdd = data[i] + key;
+		if (i % 3)
+			toAdd += _ENCRYPTION_ARR[
+				(key2+i)%_ENCRYPTION_ARR.size()
+			];
+		else
+			toAdd -= _ENCRYPTION_ARR[
+				(key2+i)%_ENCRYPTION_ARR.size()
+			];
+		toReturn += toAdd;
+	}
+	return toReturn;
+}
+
+/**
+ * @brief Decrypts a string using a key or two (DECRYPTS DATA ENCRYPTED WITH hfl::encrypt).
+ * 
+ * @param data the data to decrypt
+ * @param key the key to decrypt with
+ * @param key2 the second key to decrypt with
+ * 
+ * @return the decrypted string
+*/
+std::string decrypt(
+	const std::string& data,
+	uint32_t key,
+	uint32_t key2 = 0
+) {
+	std::string toReturn;
+	for (uint64_t i = 0; i < data.size(); ++i) {
+		uint32_t toAdd = data[i] - key;
+		if (i % 3) 
+			toAdd -= _ENCRYPTION_ARR[
+				(key2+i)%_ENCRYPTION_ARR.size()
+			];
+		else
+			toAdd += _ENCRYPTION_ARR[
+				(key2+i)%_ENCRYPTION_ARR.size()
+			];
+		toReturn += toAdd;
+	}
+	return toReturn;
+}
+
+/**
+ * @brief converts an ingeter into the corresponding MCI error
+ * 
+ * @param error the error code to convert
+ * 
+ * @return the corresponding MCI error
+*/
 std::string mciErrorLookup(int error) {
 	switch (error) {
 		case 257: return "MCIERR_INVALID_DEVICE_ID";
@@ -144,7 +221,9 @@ std::string mciErrorLookup(int error) {
 	return "unknown error";
 }
 
-// terminal ASCII colors
+/**
+ * @brief terminal ASCII colors
+*/
 namespace TermColors 
 {
 	std::string reset   = "\u001b[0m";
@@ -202,7 +281,9 @@ namespace TermColors
 	std::string REVRSD = "\u001b[7m";
 }
 
-// periodic table
+/**
+ * @brief periodic table
+*/
 static const std::vector<std::vector<std::string>> periodicTable 
 {
 	{"1.0079"  , "Hydrogen"      , "H" , "1"  },
