@@ -3,7 +3,7 @@
 // Helpful Functions library (HFlib)
 // created by Zaine Rehman
 // additional help by Bertie
-// from 12-7-22 to 7-16-23
+// from 12-7-22 to 8-1-23
 
 #define HFlib
 
@@ -12,7 +12,7 @@
 #error "C++ is required for compile HFlib."
 #endif
 
-static constexpr char HFL_version[] = "2.0.0";
+static constexpr char HFL_version[] = "2.0.1";
 
 #ifdef __clang__
 #define COMPILER clang
@@ -70,40 +70,49 @@ Version history:
 
 v1.0.0 
  	- first release of HFlib!
+
 v1.0.1
  	- docs are finished (probably not best to release the docs after the release...)
  	- polished some things
+
 v1.1.0
     - fixed/optimized a lot of the code
     - added the Audio class to HF_basics
+
 v1.1.2
 	- added the sleep function to HF_basics
 	- added the mciLookupError function to HF_basics
 	- fixed a lot of issues with various functions
 	- added better support for GCC
 	- added methods to Audio
+
 v1.1.3
 	- added sleep() and mciLookupError()
 	- added <TAG> syntax to FORMATTING
 	- added the COMPILER macro
 	- small fixes
+
 v1.1.4
 	- added the CPP_VERSION macro
 	- realized that mciSendString() is a meh way to play audio. Audio class only works for smaller files. 
 	- added in docs to include HFlib.hpp always instead of individual files
 	- added the OS macro
 	- added multiple functions for getting user input
+
 v1.1.5
 	- added better support for non-windows systems
+
 v1.1.7
 	- added wordCount() and inRange() to HF_basics
 	- added HF_joke :)
 	- small tweaks
+
 v1.1.8
 	- added inline to most class operators
 	- small tweaks
 	- zooborkText now fully works
 	- added the HFlib macro
+
 v2.0.0
 	- added Doxygen comment syntax to everything
 	- fully reworked HF_math
@@ -129,4 +138,8 @@ v2.0.0
 	- renamed things with "WIN_" prefixes (removed the prefix)
 	- made uintx_t work completely like any other integer type
 	- fixed up the docs a little
+
+v2.0.1
+	- added doxygen comments to HF_math
+	- fixed the issues with HF_math
 ************************************************************************/

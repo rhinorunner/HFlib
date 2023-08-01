@@ -9,14 +9,27 @@
 // Helpful Functions library
 namespace hfl {
 
-// converts any angle to an angle between 0 and 360
+/**
+ * @brief Converts any angle to an angle between 0 and 360.
+ * 
+ * @param angle the angle to convert
+ * 
+ * @return the converted angle
+*/
 constexpr float normalizeAngle(float angle) {
 	while (angle < 0)    angle += 360;
 	while (angle >= 360) angle -= 360;
 	return angle;
 }
 
-// gets the difference between 2 angles
+/**
+ * @brief Gets the difference between 2 angles.
+ * 
+ * @param angle1 the first angle
+ * @param angle2 the second angle
+ * 
+ * @return the difference between the 2 angles
+*/
 uint16_t diffBetweenAngles(
 	const uint16_t& angle1, 
 	const uint16_t& angle2
@@ -30,7 +43,14 @@ uint16_t diffBetweenAngles(
 	return (diffAdd < diffSub) ? diffAdd : diffSub;
 }
 
-// returns the gcd of 2 numbers
+/**
+ * @brief Gets the greatest common denominator of 2 numbers.
+ * 
+ * @param a the first number
+ * @param b the second number
+ * 
+ * @return the greatest common denominator of the 2 numbers
+*/
 int64_t gcd(
 	const int64_t& a, 
 	const int64_t& b
@@ -48,12 +68,12 @@ class Real {
 	virtual double eval();
 };
 
-class Rational: Real {
+class Rational : Real {
 public:
 	Rational(const double dec) {
 		double decPart = dec - (int64_t)dec;
 		// get the whole part
-		int64_t wholePart = (int64_t)dec;
+		[[maybe_unused]] int64_t wholePart = (int64_t)dec;
 		// get the numerator
 		int64_t numerator = decPart * 1000000000;
 		// get the denominator
@@ -71,15 +91,17 @@ public:
 		den = iden;
 	}
 
-	Rational Rational::multiply(Rational y) {
+	Rational multiply(Rational y) {
 		Rational(num * y.num, den * y.den).simplify();
+		return *this;
 	}
 
-	Rational Rational::divide(Rational y) {
+	Rational divide(Rational y) {
 		Rational(num * y.den, den * y.num).simplify();
+		return *this;
 	}
 
-	Rational Rational::add(Rational y) {
+	Rational add(Rational y) {
 		int64_t cd = gcd(den, y.den);
 		int64_t dxnum = (cd/den) * num;
 		int64_t dynum = (cd/y.den) * y.num;
@@ -87,16 +109,17 @@ public:
 		return Rational(dxnum + dynum, cd).simplify();
 	}
 
-	Rational Rational::subtract(Rational y) {
+	Rational subtract(Rational y) {
 		Rational n = y.multiply(Rational(-1, 1));
 		return this->add(n);
 	}
 
-	Rational Rational::simplify() {
+	Rational simplify() {
 		Rational(num / gcd(num, den), den/gcd(num,den));
+		return *this;
 	}
 
-	double Rational::eval() {
+	double eval() {
 		return num / den;
 	}
 
@@ -110,19 +133,47 @@ private:
 	Rational deg;
 	Rational radicand;
 
-	double Radical::eval() {
+	double eval() {
 		return std::pow(radicand.eval(), 1/deg.eval());
 	}
 
 };
 
 
-// converts an unsigned int into a number with a variable amount of bits
+/**
+ * @brief Converts an unsigned int into a number with a variable amount of bits.
+ * 
+ * @param val the value to convert
+ * @param bits the amount of bits to convert to
+ * 
+ * @return the converted value
+*/
 constexpr inline uint64_t formatBits(
 	const uint64_t& val,
 	const uint16_t& bits
 ) {return val & UINT64_MAX >> (64-bits);}
 
+class Gauss {
+public:
+	Gauss(int64_t sigma, int64_t mu) : stddiv(sigma), mean(mu) {}
+
+	double get(double x) {
+		double coeff = 1/(stddiv*sqrt(6.283185307179586));
+		double expo = pow((x-stddiv)/mean, 2) * (-1/2);
+		return coeff * exp(expo);
+	}
+
+	double sample() {
+		return get((double)rand()/(double)rand());
+	}
+private:
+	int64_t stddiv;
+	int64_t mean;
+};
+
+/**
+ * @brief A class for generating good random numbers.
+*/
 class Rand {
 private:
 	int64_t seed;
@@ -144,11 +195,11 @@ private:
 public:
 	double getSample() {
 		Gauss dist = Gauss(1, 0);
-		return dist.sample(this);
+		return dist.sample();
 	}
 	double getSampleCustom(int64_t sigma, int64_t mu) {
 		Gauss dist = Gauss(sigma, mu);
-		return dist.sample(this);
+		return dist.sample();
 	}
 	int64_t getInt() {
 		return genRand();
@@ -158,24 +209,13 @@ public:
 	}
 };
 
-class Gauss {
-public:
-	Gauss(int64_t sigma, int64_t mu) : stddiv(sigma), mean(mu) {}
-
-	double Gauss::get(double x) {
-		double coeff = 1/(stddiv*sqrt(constants::tau));
-		double expo = pow((x-stddiv)/mean, 2) * (-1/2);
-		return coeff * exp(expo);
-	}
-
-	double Gauss::sample(Rand* rng) {
-		return Gauss::get(rng->getFloat());
-	}
-private:
-	int64_t stddiv;
-	int64_t mean;
-};
-
+/**
+ * @brief Returns all the prime numbers up to a certain number.
+ * 
+ * @param ceiling the number to get primes up to
+ * 
+ * @return a vector of all the prime numbers up to the ceiling
+*/
 std::vector<uint64_t> getPrimes(uint64_t ceiling) {
 	std::vector<std::pair<uint64_t, bool>> primes;
 	std::vector<uint64_t> primesReturn;
@@ -202,6 +242,13 @@ std::vector<uint64_t> getPrimes(uint64_t ceiling) {
 	return primesReturn;
 }
 
+/**
+ * @brief Returns whether a number is prime or not.
+ * 
+ * @param n the number to check
+ * 
+ * @return whether the number is prime or not
+*/
 constexpr bool isPrime(uint64_t n) {
 	if (n == 2) [[unlikely]] return true;
 	if ((n < 2) || !(n % 2)) return false;
@@ -213,10 +260,24 @@ constexpr bool isPrime(uint64_t n) {
 	return true;
 }
 
+/**
+ * @brief Generates a random 64 bit integer using rand().
+ * 
+ * @param seed the seed to use for the random number
+ * 
+ * @return the random number
+*/
 inline uint64_t rand64(
 	uint64_t seed = rand()
 ) {return ((uint64_t)(rand()) << 32) | seed;}
 
+/**
+ * @brief Calculates the factorial of a number. [SLOW IMPLEMENTATION]
+ * 
+ * @param num the number to calculate the factorial of
+ * 
+ * @return the factorial of the number
+*/
 constexpr inline double factorial(uint64_t num) {
 	return ((num == 1) || !num) ? 1 : num * factorial(num - 1);
 }

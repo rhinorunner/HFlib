@@ -5,7 +5,7 @@
 ###### contributors: Bertie
 ##
 ###### *First release was v1.0.0, published 3-23-23*
-###### *Latest release is v2.0.0, published 7-16-23*
+###### *Latest release is v2.0.1, published 8-1-23*
 # 
 ### What is Helpful Functions Library?
 Helpful Functions Library (HFlib) is a collection of C++ implementation files that provide helpful functions, classes, and variables for various different purposes.
